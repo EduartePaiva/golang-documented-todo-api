@@ -1,6 +1,6 @@
 # System dependencies
 
 - Golang
-- Node
+- Bun, node will need annoying typescript compilation step
 - pnpm
 - sqlc

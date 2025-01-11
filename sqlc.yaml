@@ -2,9 +2,9 @@ version: "2"
 sql:
   - engine: "postgresql"
     queries: "drizzle/sqlc/query.sql"
-    schema: "drizzle/sqlc/schema.sql"
+    schema: "drizzle/db/migrations"
     gen:
       go:
-        package: "tutorial"
-        out: "tutorial"
+        package: "query"
+        out: "query"
         sql_package: "pgx/v5"

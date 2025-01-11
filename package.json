@@ -5,11 +5,13 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
+        "start": "bun ./drizzle/main.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
         "lint": "next lint",
         "db:migrate": "cross-env DB_MIGRATING=true drizzle-kit migrate",
         "db:generate": "drizzle-kit generate",
-        "db:studio": "drizzle-kit studio"
+        "db:studio": "drizzle-kit studio",
+        "db:build-all": "drizzle-kit generate && pnpm start && sqlc generate"
     },
     "keywords": [],
     "author": "",
