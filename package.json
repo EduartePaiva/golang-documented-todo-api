@@ -1,0 +1,31 @@
+{
+    "name": "golang-documented-todo-api",
+    "version": "1.0.0",
+    "description": "This will be a helper to setting up drizzle-orm with golang",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@eslint/js": "^9.18.0",
+        "@types/node": "^22.10.5",
+        "dotenv": "^16.4.7",
+        "dotenv-expand": "^12.0.1",
+        "drizzle-kit": "^0.30.1",
+        "drizzle-orm": "^0.38.3",
+        "eslint": "^9.18.0",
+        "eslint-config-prettier": "^9.1.0",
+        "globals": "^15.14.0",
+        "postgres": "^3.4.5",
+        "prettier": "^3.4.2",
+        "typescript": "^5.7.3",
+        "typescript-eslint": "^8.19.1"
+    },
+    "dependencies": {
+        "zod": "^3.24.1"
+    }
+}
