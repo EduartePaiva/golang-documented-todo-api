@@ -1,0 +1,26 @@
+openapi: 3.1.0
+info:
+  title: Todo List API with Authentication
+  version:  1.0.0
+  description: A Todo Backend that Will have authentication with OAuth2.0
+  contact:
+    name: Eduarte
+servers:
+  - url: http://localhost:3000/v1
+    description: Development server
+
+paths:
+  /:
+    get:
+      summary: Hello world path
+      description: Returns hello world
+      responses:
+        '200':
+          description: Hello world
+          content:
+            text/plain:
+              schema: 
+                type: string
+              example: "Hello, world"
+                
+    
