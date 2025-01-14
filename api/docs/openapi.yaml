@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Todo List API with Authentication
-  version:  1.0.0
+  version: 1.0.0
   description: A Todo Backend that Will have authentication with OAuth2.0
   contact:
     name: Eduarte
@@ -15,11 +15,11 @@ paths:
       summary: Hello world path
       description: Returns hello world
       responses:
-        '200':
+        "200":
           description: Hello world
           content:
             text/plain:
-              schema: 
+              schema:
                 type: string
               example: "Hello, world"
   /docs/openapi.yaml:
@@ -29,7 +29,7 @@ paths:
       summary: Documentation file
       description: show the raw yaml file of the documentation
       responses:
-        '200':
+        "200":
           description: openapi doc
           content:
             text/plain:
@@ -53,14 +53,130 @@ paths:
       summary: Reference page
       description: show a nice scalar ui for the openapi docs
       responses:
-        '200':
+        "200":
           description: gets a html page
           content:
             text/html:
               schema:
                 type: "string"
               example: "<html></html>"
-                
-              
-                                
-    
+  /tasks:
+    get:
+      tags:
+        - Todo
+      responses:
+        "200":
+          description: The list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      minimum: -9007199254740991
+                      maximum: 9007199254740991
+                    name:
+                      type: string
+                    done:
+                      type: boolean
+                    updatedAt:
+                      type: string
+                    createdAt:
+                      type: string
+                  required: [id, name, done, updatedAt, createdAt]
+    post:
+      tags:
+        - Todo
+      requestBody:
+        description: The task to insert
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 500
+                done:
+                  type: boolean
+              required: [name]
+      responses:
+        "200":
+          description: The created task
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  done:
+                    type: boolean
+                  updatedAt:
+                    type: string
+                  createdAt:
+                    type: string
+                required: [id, name, done, updatedAt, createdAt]
+        "404":
+          description: Tasks not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Not Found
+        "422":
+          description: The validation erro(s)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                required: [error]
+  /tasks/{id}:
+    get:
+      tags:
+        - Todo
+      parameters:
+        - schema:
+            type: number
+          required: true
+          name: id
+          in: path
+          example: 123456
+      responses:
+        "200":
+          description: The selected task
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                  name:
+                    type: string
+                  done:
+                    type: boolean
+                    example: false
+                  updatedAt:
+                    type: string
+                  createdAt:
+                    type: string
+                required: [id, name, done, updatedAt, createdAt]
+        "404":
+          description: Task not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Not Found
