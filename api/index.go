@@ -7,12 +7,13 @@ import (
 
 func CreateApp() *fiber.App {
 	app := fiber.New()
+	api := app.Group("/api/v1")
 
-	app.Get("/", func(c *fiber.Ctx) error {
+	api.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, world!")
 	})
 
-	app.Mount("/docs", docs.GetDocsApi())
+	api.Mount("/docs", docs.GetDocsApi())
 
 	return app
 }
