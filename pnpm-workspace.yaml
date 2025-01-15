@@ -1,3 +1,4 @@
 packages:
   - drizzle
   - frontend
+  - js-packages/*

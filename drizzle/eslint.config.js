@@ -1,8 +1,8 @@
 import pluginJs from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import checkFile from "eslint-plugin-check-file";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+
+import myConfig from "@golang-documented-todo-api/eslint-config";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -10,32 +10,5 @@ export default [
     { languageOptions: { globals: globals.browser } },
     pluginJs.configs.recommended,
     ...tseslint.configs.recommended,
-    {
-        rules: {
-            "no-unused-vars": "warn",
-            semi: "error",
-        },
-    },
-    {
-        files: ["drizzle/**/*"],
-        plugins: {
-            "check-file": checkFile,
-        },
-        rules: {
-            "check-file/filename-naming-convention": [
-                "error",
-                {
-                    "**/*.ts": "KEBAB_CASE",
-                },
-                { ignoreMiddleExtensions: true },
-            ],
-            "check-file/folder-naming-convention": [
-                "error",
-                {
-                    "**": "KEBAB_CASE",
-                },
-            ],
-        },
-    },
-    eslintConfigPrettier,
+    ...myConfig,
 ];
