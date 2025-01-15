@@ -9,7 +9,7 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
         "paths": {
             "@/*": [
-                "./drizzle/*"
+                "./src/*"
             ]
         }
     }

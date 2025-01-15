@@ -1,6 +1,6 @@
+import db from "@/db";
+import { todos } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import db from "../../db";
-import { todos } from "../../db/schema";
 import { generateSelectQuery } from "./queries-utils";
 
 const selectTodoById = generateSelectQuery(
