@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-documented-todo-api/api/docs"
+	"github.com/golang-documented-todo-api/app/api/docs"
 )
 
 func CreateApp() *fiber.App {
