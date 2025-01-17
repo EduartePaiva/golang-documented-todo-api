@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-documented-todo-api/app/api/docs"
+	"github.com/golang-documented-todo-api/app/api/routes"
 )
 
 func CreateApp() *fiber.App {
@@ -12,8 +12,6 @@ func CreateApp() *fiber.App {
 	api.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, world!")
 	})
-
-	api.Mount("/docs", docs.GetDocsApi())
-
+	routes.DocsRouter(api)
 	return app
 }
