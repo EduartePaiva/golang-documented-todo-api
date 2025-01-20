@@ -11,6 +11,21 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createSession = `-- name: CreateSession :exec
+    insert into "session" ("id", "user_id", "expires_at") values ($1, $2, $3)
+`
+
+type CreateSessionParams struct {
+	ID        string
+	UserID    pgtype.UUID
+	ExpiresAt pgtype.Timestamptz
+}
+
+func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) error {
+	_, err := q.db.Exec(ctx, createSession, arg.ID, arg.UserID, arg.ExpiresAt)
+	return err
+}
+
 const getTodoByID = `-- name: GetTodoByID :many
     select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."id" = $1
 `

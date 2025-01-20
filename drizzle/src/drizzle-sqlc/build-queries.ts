@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path from "path";
+import inserts from "./queries/inserts";
 import selects from "./queries/selects";
 
 export function buildQueries() {
@@ -11,6 +12,9 @@ export function buildQueries() {
 
     for (const select of selects) {
         output += select;
+    }
+    for (const insert of inserts) {
+        output += insert;
     }
 
     writeFileSync(path.join(__dirname, "../sqlc/query.sql"), output);
