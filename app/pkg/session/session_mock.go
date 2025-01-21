@@ -14,3 +14,6 @@ type SessionServiceMock struct {
 func (m *SessionServiceMock) CreateSession(ctx context.Context, arg repository.CreateSessionParams) error {
 	return nil
 }
+func (m *SessionServiceMock) SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error) {
+	return repository.SelectUserBySessionIDRow{}, nil
+}

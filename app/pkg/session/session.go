@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -43,4 +44,23 @@ func CreateSession(
 	}
 	service.CreateSession(ctx, session)
 	return repository.Session(session)
+}
+
+func ValidateSessionToken(ctx context.Context, service SessionService, token string) (repository.SelectUserBySessionIDRow, error) {
+	sessionId := encoding.EncodeHexLowerCase(crypto.Sha256([]byte(token)))
+
+	result, err := service.SelectUserBySessionID(ctx, sessionId)
+	if err != nil {
+		return result, err
+	}
+
+	if time.Now().Compare(result.ExpiresAt.Time) == 1 {
+		return result, fmt.Errorf("the token expired")
+	}
+
+	if time.Now().Compare(result.ExpiresAt.Time.Add(time.Hour*24*15)) == 1 {
+		// update expiredAt
+	}
+
+	return result, nil
 }

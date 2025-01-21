@@ -10,6 +10,7 @@ import (
 // Service is an interface from which our api module can access our repository of all our models
 type SessionService interface {
 	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
+	SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error)
 }
 
 type sessionService struct {
@@ -24,4 +25,8 @@ func NewService(db db.Database) SessionService {
 // InsertBook is a service layer that helps insert book in BookShop
 func (s *sessionService) CreateSession(ctx context.Context, arg repository.CreateSessionParams) error {
 	return s.db.CreateSession(ctx, arg)
+}
+
+func (s *sessionService) SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error) {
+	return s.db.SelectUserBySessionID(ctx, id)
 }

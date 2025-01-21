@@ -11,6 +11,7 @@ import (
 type Database interface {
 	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
 	GetTodoByID(ctx context.Context, id pgtype.UUID) ([]repository.Todo, error)
+	SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error)
 	WithTx(tx pgx.Tx) *repository.Queries
 }
 

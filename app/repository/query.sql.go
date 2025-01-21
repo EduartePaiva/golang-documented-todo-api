@@ -56,3 +56,34 @@ func (q *Queries) GetTodoByID(ctx context.Context, id pgtype.UUID) ([]Todo, erro
 	}
 	return items, nil
 }
+
+const selectUserBySessionID = `-- name: SelectUserBySessionID :one
+select "users"."id", "users"."username", "users"."avatar_url", "users"."provider_user_id", "users"."provider_name", "session"."id", "session"."user_id", "session"."expires_at" from "session" inner join "users" on "users"."id" = "session"."user_id" where "session"."id" = $1 limit 1
+`
+
+type SelectUserBySessionIDRow struct {
+	ID             pgtype.UUID
+	Username       string
+	AvatarUrl      pgtype.Text
+	ProviderUserID string
+	ProviderName   ProviderName
+	ID_2           string
+	UserID         pgtype.UUID
+	ExpiresAt      pgtype.Timestamptz
+}
+
+func (q *Queries) SelectUserBySessionID(ctx context.Context, id string) (SelectUserBySessionIDRow, error) {
+	row := q.db.QueryRow(ctx, selectUserBySessionID, id)
+	var i SelectUserBySessionIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.AvatarUrl,
+		&i.ProviderUserID,
+		&i.ProviderName,
+		&i.ID_2,
+		&i.UserID,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
