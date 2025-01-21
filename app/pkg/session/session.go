@@ -1,6 +1,7 @@
 package session
 
 import (
+	"context"
 	"crypto/rand"
 	"math/big"
 	"time"
@@ -25,7 +26,12 @@ func GenerateSessionToken() (string, error) {
 	return token, nil
 }
 
-func CreateSession(token string, userId pgtype.UUID) repository.Session {
+func CreateSession(
+	ctx context.Context,
+	service SessionService,
+	token string,
+	userId pgtype.UUID,
+) repository.Session {
 	sessionId := encoding.EncodeHexLowerCase(crypto.Sha256([]byte(token)))
 
 	session := repository.CreateSessionParams{
@@ -35,6 +41,6 @@ func CreateSession(token string, userId pgtype.UUID) repository.Session {
 			Time: time.Now().Add(time.Hour * 24 * 30),
 		},
 	}
-
+	service.CreateSession(ctx, session)
 	return repository.Session(session)
 }
