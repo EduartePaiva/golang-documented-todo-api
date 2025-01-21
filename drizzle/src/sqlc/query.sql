@@ -4,3 +4,5 @@
 select "users"."id", "users"."username", "users"."avatar_url", "users"."provider_user_id", "users"."provider_name", "session"."id", "session"."user_id", "session"."expires_at" from "session" inner join "users" on "users"."id" = "session"."user_id" where "session"."id" = $1 limit 1;
 -- name: CreateSession :exec
     insert into "session" ("id", "user_id", "expires_at") values ($1, $2, $3);
+-- name: UpdateSessionExpiresAt :exec
+    update "session" set "expires_at" = $1 where "session"."id" = $2;

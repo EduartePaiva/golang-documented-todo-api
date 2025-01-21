@@ -3,9 +3,12 @@ package session
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang-documented-todo-api/app/pkg/crypto"
 	"github.com/golang-documented-todo-api/app/pkg/encoding"
+	"github.com/golang-documented-todo-api/app/repository"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 )
@@ -37,4 +40,32 @@ func TestCreateSession(t *testing.T) {
 
 	// test that the encoding is working
 	assert.Equal(t, session.ID, encoding.EncodeHexLowerCase(crypto.Sha256([]byte("testing"))))
+}
+
+func TestValidateSessionToken(t *testing.T) {
+	// 1: select user, it it don't find it it should return an error
+	testObj := new(SessionServiceMock)
+	ctx := context.Background()
+	// Simulates that the call to this function return no rows
+	mockCall := testObj.On(
+		"SelectUserBySessionID",
+		ctx, encoding.EncodeHexLowerCase(crypto.Sha256([]byte("testing"))),
+	).Return(repository.SelectUserBySessionIDRow{}, pgx.ErrNoRows)
+	_, err := ValidateSessionToken(ctx, testObj, "testing")
+	testObj.AssertExpectations(t)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
+	mockCall.Unset()
+
+	// 2: if the session is expired, it should return an error with expired session
+	mockCall = testObj.On(
+		"SelectUserBySessionID",
+		ctx, encoding.EncodeHexLowerCase(crypto.Sha256([]byte("testing"))),
+	).Return(repository.SelectUserBySessionIDRow{
+		ExpiresAt: pgtype.Timestamptz{Time: time.Date(2021, 0, 0, 0, 0, 0, 0, time.Local)},
+	}, nil)
+	_, err = ValidateSessionToken(ctx, testObj, "testing")
+	assert.EqualError(t, err, "the token expired")
+	mockCall.Unset()
+	// 3: if the session is at least 15 days old it'll renew it, call the database and return the data
+	// 4: if the session is less than 15 it'll just return the data
 }

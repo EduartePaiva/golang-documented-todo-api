@@ -1,8 +1,8 @@
 import db from "@/db";
 import { sessionTable } from "@/db/schema";
-import { generateInsertExecQuery } from "./queries-utils";
+import { generateExecQuery } from "./queries-utils";
 
-const createSession = generateInsertExecQuery(
+const createSession = generateExecQuery(
     "CreateSession",
     db
         .insert(sessionTable)

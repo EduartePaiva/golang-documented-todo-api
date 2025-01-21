@@ -46,7 +46,11 @@ func CreateSession(
 	return repository.Session(session)
 }
 
-func ValidateSessionToken(ctx context.Context, service SessionService, token string) (repository.SelectUserBySessionIDRow, error) {
+func ValidateSessionToken(
+	ctx context.Context,
+	service SessionService,
+	token string,
+) (repository.SelectUserBySessionIDRow, error) {
 	sessionId := encoding.EncodeHexLowerCase(crypto.Sha256([]byte(token)))
 
 	result, err := service.SelectUserBySessionID(ctx, sessionId)
@@ -60,7 +64,11 @@ func ValidateSessionToken(ctx context.Context, service SessionService, token str
 
 	if time.Now().Compare(result.ExpiresAt.Time.Add(time.Hour*24*15)) == 1 {
 		// update expiredAt
+		result.ExpiresAt.Time = time.Now().Add(time.Hour * 24 * 30)
+		service.UpdateSessionExpiresAt(
+			ctx,
+			repository.UpdateSessionExpiresAtParams{ExpiresAt: result.ExpiresAt, ID: result.ID_2},
+		)
 	}
-
 	return result, nil
 }

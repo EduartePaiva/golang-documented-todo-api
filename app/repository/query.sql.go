@@ -87,3 +87,17 @@ func (q *Queries) SelectUserBySessionID(ctx context.Context, id string) (SelectU
 	)
 	return i, err
 }
+
+const updateSessionExpiresAt = `-- name: UpdateSessionExpiresAt :exec
+    update "session" set "expires_at" = $1 where "session"."id" = $2
+`
+
+type UpdateSessionExpiresAtParams struct {
+	ExpiresAt pgtype.Timestamptz
+	ID        string
+}
+
+func (q *Queries) UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionExpiresAtParams) error {
+	_, err := q.db.Exec(ctx, updateSessionExpiresAt, arg.ExpiresAt, arg.ID)
+	return err
+}

@@ -8,7 +8,7 @@ export function generateInsertOneQuery(name: string, query: Query): string {
     return `-- name: ${name} :one
     ${query.sql};\n`;
 }
-export function generateInsertExecQuery(name: string, query: Query): string {
+export function generateExecQuery(name: string, query: Query): string {
     return `-- name: ${name} :exec
     ${query.sql};\n`;
 }

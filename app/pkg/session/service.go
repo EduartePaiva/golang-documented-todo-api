@@ -11,6 +11,7 @@ import (
 type SessionService interface {
 	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
 	SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error)
+	UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error
 }
 
 type sessionService struct {
@@ -29,4 +30,8 @@ func (s *sessionService) CreateSession(ctx context.Context, arg repository.Creat
 
 func (s *sessionService) SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error) {
 	return s.db.SelectUserBySessionID(ctx, id)
+}
+
+func (s *sessionService) UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error {
+	return s.db.UpdateSessionExpiresAt(ctx, arg)
 }
