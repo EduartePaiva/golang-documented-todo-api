@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestGenerateSessionToken(t *testing.T) {
@@ -66,6 +67,25 @@ func TestValidateSessionToken(t *testing.T) {
 	_, err = ValidateSessionToken(ctx, testObj, "testing")
 	assert.EqualError(t, err, "the token expired")
 	mockCall.Unset()
+
 	// 3: if the session is at least 15 days old it'll renew it, call the database and return the data
+	mockCall = testObj.On(
+		"SelectUserBySessionID",
+		ctx, encoding.EncodeHexLowerCase(crypto.Sha256([]byte("testing"))),
+	).Return(repository.SelectUserBySessionIDRow{
+		ExpiresAt: pgtype.Timestamptz{Time: time.Now().Add(time.Hour * 24 * 14), Valid: true},
+		ID_2:      "testing",
+	}, nil).On(
+		"UpdateSessionExpiresAt",
+		mock.Anything,
+		mock.Anything,
+	).Return(nil)
+
+	value, err := ValidateSessionToken(ctx, testObj, "testing")
+	assert.NoError(t, err)
+	// assert that the expiresAt is at least 29 days from now
+	assert.Equal(t, value.ExpiresAt.Time.Compare(time.Now().Add(time.Hour*24*29)), 1)
+
+	mockCall.Unset()
 	// 4: if the session is less than 15 it'll just return the data
 }

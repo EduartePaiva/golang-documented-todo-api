@@ -62,7 +62,7 @@ func ValidateSessionToken(
 		return result, fmt.Errorf("the token expired")
 	}
 
-	if time.Now().Compare(result.ExpiresAt.Time.Add(time.Hour*24*15)) == 1 {
+	if time.Now().Compare(result.ExpiresAt.Time.Add(-time.Hour*24*15)) == 1 {
 		// update expiredAt
 		result.ExpiresAt.Time = time.Now().Add(time.Hour * 24 * 30)
 		service.UpdateSessionExpiresAt(
