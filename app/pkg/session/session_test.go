@@ -16,7 +16,6 @@ import (
 
 func TestGenerateSessionToken(t *testing.T) {
 	v, err := GenerateSessionToken()
-	t.Log(len(v), v)
 	// This should never error
 	assert.Nil(t, err)
 	assert.NotEmpty(t, v)
@@ -85,7 +84,28 @@ func TestValidateSessionToken(t *testing.T) {
 	assert.NoError(t, err)
 	// assert that the expiresAt is at least 29 days from now
 	assert.Equal(t, value.ExpiresAt.Time.Compare(time.Now().Add(time.Hour*24*29)), 1)
-
 	mockCall.Unset()
-	// 4: if the session is less than 15 it'll just return the data
+
+}
+
+func TestValidateSessionToken2(t *testing.T) {
+	testObj := new(SessionServiceMock)
+	ctx := context.Background()
+	// 4: if the expiredAt will end in more than 15 days it'll just return the data
+
+	sessionData := repository.SelectUserBySessionIDRow{
+		ExpiresAt: pgtype.Timestamptz{
+			Time: time.Now().Add(time.Hour*24*15 + time.Hour),
+		},
+		Username: "hello test",
+	}
+
+	testObj.On(
+		"SelectUserBySessionID",
+		ctx, encoding.EncodeHexLowerCase(crypto.Sha256([]byte("testing"))),
+	).Return(sessionData, nil)
+	data, err := ValidateSessionToken(ctx, testObj, "testing")
+	testObj.AssertExpectations(t)
+	assert.NoError(t, err)
+	assert.Equal(t, sessionData, data)
 }
