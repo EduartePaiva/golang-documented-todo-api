@@ -16,5 +16,6 @@ func CreateApp(ctx context.Context, dataSource *datasources.DataSources) *fiber.
 		return c.SendString("Hello, world!")
 	})
 	routes.DocsRouter(api)
+	routes.LoginRouter(api)
 	return app
 }
