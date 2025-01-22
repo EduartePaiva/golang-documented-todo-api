@@ -167,7 +167,8 @@ paths:
                     type: string
                   done:
                     type: boolean
-                    example: false
+                    examples:
+                      - false
                   updatedAt:
                     type: string
                   createdAt:
@@ -180,3 +181,122 @@ paths:
               schema:
                 type: string
               example: Not Found
+  /login/github:
+    get:
+      tags: [Auth]
+      description: Set the state in the cookie and redirect the user to the oAuth url
+      responses:
+        302:
+          description: redirect
+          headers:
+            Location:
+              description: https://github.com/login/oauth/authorize?response_type=code&client_id=some_id&state=123456&scope=&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fv1%2Flogin%2Fgithub%2Fcallback
+              schema:
+                type: string
+  /login/github/callback:
+    get:
+      tags: [Auth]
+      description: "Callback auth flow"
+      parameters:
+        - name: state
+          in: query
+          required: true
+          schema:
+            default: same_state
+            type: string
+            description: The state that was generated in /login/github
+        - name: code
+          in: query
+          required: true
+          schema:
+            default: 123456
+            type: string
+            description: The code that will be used to get the accessToken
+        - name: github_oauth_state
+          in: cookie
+          required: true
+          schema:
+            default: same_state
+            type: string
+            description: This state have to match the query state
+      responses:
+        400:
+          description: "If any error happens in the auth flow"
+          content:
+            text/plain:
+              example: Bad Request
+        302:
+          description: Redirects to the homepage after a successful login
+          headers:
+            Location:
+              description: /
+              schema:
+                type: string
+            Set-Cookie:
+              description: The session cookie being set.
+              schema:
+                type: string
+                example: session=abc123; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Wed, 22 Jan 2025 12:34:56 GMT
+  /login/google:
+    get:
+      tags: [Auth]
+      description: Set the state and a codeVerifier in the cookie and redirect the user to the google oAuth url. Google flow uses PKCE
+      responses:
+        302:
+          description: redirect
+          headers:
+            Location:
+              description: https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=some_id&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fv1%2Flogin%2Fgoogle%2Fcallback&state=123456&code_challenge_method=S256&code_challenge=ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0&scope=openid+profile
+              schema:
+                type: string
+  /login/google/callback:
+    get:
+      tags: [Auth]
+      description: "google callback flow"
+      parameters:
+        - name: state
+          in: query
+          required: true
+          schema:
+            default: same_state
+            type: string
+            description: The state that was generated in /login/github
+        - name: code
+          in: query
+          required: true
+          schema:
+            default: 123456
+            type: string
+            description: The code that will be used to get the accessToken
+        - name: google_oauth_state
+          in: cookie
+          required: true
+          schema:
+            default: same_state
+            type: string
+            description: This state have to match the query state
+        - name: google_code_verifier
+          in: cookie
+          required: true
+          schema:
+            default: some_code_verifier
+            type: string
+            description: The codeVerifier that was saved in cookie when visiting /login/google
+      responses:
+        400:
+          description: "If any error happens in the auth flow"
+          content:
+            text/plain:
+              example: Bad Request
+        302:
+          description: Redirects to the homepage after a successful login
+          headers:
+            Location:
+              description: /
+              schema:
+                type: string
+            Set-Cookie:
+              description: The session cookie being set.
+              schema:
+                type: string
+                example: session=abc123; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Wed, 22 Jan 2025 12:34:56 GMT
