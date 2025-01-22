@@ -17,8 +17,10 @@ import (
 func TestGenerateSessionToken(t *testing.T) {
 	v, err := GenerateSessionToken()
 	// This should never error
+	t.Log("\nGenerated session token: ", v, "\n")
 	assert.Nil(t, err)
 	assert.NotEmpty(t, v)
+	assert.Equal(t, len(v), 32)
 }
 
 func TestCreateSession(t *testing.T) {

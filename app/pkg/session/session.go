@@ -2,9 +2,7 @@ package session
 
 import (
 	"context"
-	"crypto/rand"
 	"fmt"
-	"math/big"
 	"time"
 
 	"github.com/golang-documented-todo-api/app/pkg/crypto"
@@ -15,13 +13,9 @@ import (
 
 func GenerateSessionToken() (string, error) {
 	// Generate a random slice of byte of length 20
-	bytes := make([]byte, 0, 20)
-	for i := 0; i < 20; i++ {
-		num, err := rand.Int(rand.Reader, big.NewInt(1<<8))
-		if err != nil {
-			return "", err
-		}
-		bytes = append(bytes, byte(num.Uint64()))
+	bytes, err := crypto.GetRandomValues(20)
+	if err != nil {
+		return "", err
 	}
 	token := encoding.EncodeBase32LowerCaseNoPadding(bytes)
 	return token, nil
