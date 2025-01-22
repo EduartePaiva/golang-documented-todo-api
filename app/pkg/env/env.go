@@ -16,7 +16,15 @@ type envVariables struct {
 		DbPassword  string `env:"DB_PASSWORD"`
 		DatabaseUrl string `env:"DATABASE_URL,required"`
 	}
+	OAuth2 struct {
+		GitHub struct {
+			ClientID     string `env:"GITHUB_CLIENT_ID,required"`
+			ClientSecret string `env:"GITHUB_CLIENT_SECRET,required"`
+			RedirectURI  string `env:"GITHUB_REDIRECT_URI,required"`
+		}
+	}
 	BasePath string `env:"BASE_PATH,default=."`
+	GoEnv    string `env:"GO_ENV,default=production"`
 }
 
 var (
