@@ -11,6 +11,10 @@ func EncodeBase64urlNoPadding(bytes []byte) string {
 	return encodeBase64_internal(bytes, base64urlAlphabet, false)
 }
 
+func EncodeBase64(bytes []byte) string {
+	return encodeBase64_internal(bytes, base64Alphabet, true)
+}
+
 func encodeBase64_internal(bytes []byte, alphabet string, padding bool) string {
 	enc := base64.NewEncoding(alphabet)
 	if padding {

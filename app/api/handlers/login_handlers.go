@@ -31,7 +31,22 @@ func GetGithubRoute() fiber.Handler {
 	}
 }
 func GetGithubCallbackRoute() fiber.Handler {
+	github := arctic.GitHub(
+		env.Get().OAuth2.GitHub.ClientID,
+		env.Get().OAuth2.GitHub.ClientSecret,
+		env.Get().OAuth2.GitHub.RedirectURI,
+	)
 	return func(c *fiber.Ctx) error {
+		state := c.Query("state")
+		code := c.Query("code")
+		storedState := c.Cookies("github_oauth_state")
+
+		if state == "" || code == "" || storedState == "" || storedState != state {
+			return c.SendStatus(http.StatusBadRequest)
+		}
+
+		tokens, err := github
+
 		return c.SendString("/github/callback")
 	}
 }
