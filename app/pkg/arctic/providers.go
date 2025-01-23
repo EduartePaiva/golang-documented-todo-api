@@ -11,6 +11,12 @@ type gitHub struct {
 	ValidateAuthorizationCode func(ctx context.Context, code string) (OAuth2Tokens, error)
 }
 
+type GithubUserData struct {
+	ID        int64  `json:"id"`
+	AvatarURL string `json:"avatar_url"`
+	Name      string `json:"name"`
+}
+
 const (
 	authorizationEndpoint = "https://github.com/login/oauth/authorize"
 	tokenEndpoint         = "https://github.com/login/oauth/access_token"

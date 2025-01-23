@@ -1,6 +1,6 @@
 import db from "@/db";
-import { sessionTable } from "@/db/schema";
-import { generateExecQuery } from "./queries-utils";
+import { sessionTable, users } from "@/db/schema";
+import { generateExecQuery, generateInsertOneQuery } from "./queries-utils";
 
 const createSession = generateExecQuery(
     "CreateSession",
@@ -10,4 +10,18 @@ const createSession = generateExecQuery(
         .toSQL()
 );
 
-export default [createSession];
+const createUser = generateInsertOneQuery(
+    "CreateUser",
+    db
+        .insert(users)
+        .values({
+            providerName: "github",
+            providerUserId: "",
+            username: "",
+            avatarUrl: "",
+        })
+        .returning()
+        .toSQL()
+);
+
+export default [createSession, createUser];

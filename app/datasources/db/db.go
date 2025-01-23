@@ -9,10 +9,15 @@ import (
 )
 
 type Database interface {
-	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
 	GetTodoByID(ctx context.Context, id pgtype.UUID) ([]repository.Todo, error)
+	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
 	SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error)
 	UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error
+	SelectUserFromProviderNameAndId(
+		ctx context.Context,
+		arg repository.SelectUserFromProviderNameAndIdParams,
+	) (repository.User, error)
+	UpdateUserAvatarURL(ctx context.Context, arg repository.UpdateUserAvatarURLParams) error
 	WithTx(tx pgx.Tx) *repository.Queries
 }
 

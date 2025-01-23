@@ -1,9 +1,8 @@
-package session
+package db
 
 import (
 	"context"
 
-	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/repository"
 )
 
@@ -15,15 +14,13 @@ type SessionService interface {
 }
 
 type sessionService struct {
-	db db.Database
+	db Database
 }
 
-// NewService is used to create a single instance of the service
-func NewService(db db.Database) SessionService {
+func NewService(db Database) SessionService {
 	return &sessionService{db: db}
 }
 
-// InsertBook is a service layer that helps insert book in BookShop
 func (s *sessionService) CreateSession(ctx context.Context, arg repository.CreateSessionParams) error {
 	return s.db.CreateSession(ctx, arg)
 }
@@ -34,4 +31,23 @@ func (s *sessionService) SelectUserBySessionID(ctx context.Context, id string) (
 
 func (s *sessionService) UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error {
 	return s.db.UpdateSessionExpiresAt(ctx, arg)
+}
+
+// Services that deals with the user table
+type UserServices interface {
+	SelectUserFromProviderNameAndId(
+		ctx context.Context,
+		arg repository.SelectUserFromProviderNameAndIdParams,
+	) (repository.User, error)
+	UpdateUserAvatarURL(ctx context.Context, arg repository.UpdateUserAvatarURLParams) error
+}
+type userService struct {
+	db Database
+}
+
+func (s *userService) SelectUserFromProviderNameAndId(
+	ctx context.Context,
+	arg repository.SelectUserFromProviderNameAndIdParams,
+) (repository.User, error) {
+	return s.db.SelectUserFromProviderNameAndId(ctx, arg)
 }

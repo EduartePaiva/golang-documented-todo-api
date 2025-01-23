@@ -1,7 +1,7 @@
 import db from "@/db";
-import { sessionTable, todos } from "@/db/schema";
+import { sessionTable, todos, users } from "@/db/schema";
 import usersTable from "@/db/schema/users";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { generateSelectOneQuery, generateSelectQuery } from "./queries-utils";
 
 const selectTodoById = generateSelectQuery(
@@ -20,4 +20,20 @@ const selectUserBySessionID = generateSelectOneQuery(
         .toSQL()
 );
 
-export default [selectTodoById, selectUserBySessionID];
+const selectUserFromProviderNameAndId = generateSelectOneQuery(
+    "SelectUserFromProviderNameAndId",
+    db
+        .select()
+        .from(users)
+        .where(
+            and(eq(users.providerUserId, ""), eq(users.providerName, "github"))
+        )
+        .limit(1)
+        .toSQL()
+);
+
+export default [
+    selectTodoById,
+    selectUserBySessionID,
+    selectUserFromProviderNameAndId,
+];

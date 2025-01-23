@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/pkg/crypto"
 	"github.com/golang-documented-todo-api/app/pkg/encoding"
 	"github.com/golang-documented-todo-api/app/repository"
@@ -23,7 +24,7 @@ func GenerateSessionToken() (string, error) {
 
 func CreateSession(
 	ctx context.Context,
-	service SessionService,
+	service db.SessionService,
 	token string,
 	userId pgtype.UUID,
 ) repository.Session {
@@ -42,7 +43,7 @@ func CreateSession(
 
 func ValidateSessionToken(
 	ctx context.Context,
-	service SessionService,
+	service db.SessionService,
 	token string,
 ) (repository.SelectUserBySessionIDRow, error) {
 	sessionId := encoding.EncodeHexLowerCase(crypto.Sha256([]byte(token)))

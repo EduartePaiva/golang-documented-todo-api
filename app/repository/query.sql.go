@@ -26,6 +26,35 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) er
 	return err
 }
 
+const createUser = `-- name: CreateUser :one
+    insert into "users" ("id", "username", "avatar_url", "provider_user_id", "provider_name") values (default, $1, $2, $3, $4) returning "id", "username", "avatar_url", "provider_user_id", "provider_name"
+`
+
+type CreateUserParams struct {
+	Username       string
+	AvatarUrl      pgtype.Text
+	ProviderUserID string
+	ProviderName   ProviderName
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
+		arg.AvatarUrl,
+		arg.ProviderUserID,
+		arg.ProviderName,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.AvatarUrl,
+		&i.ProviderUserID,
+		&i.ProviderName,
+	)
+	return i, err
+}
+
 const getTodoByID = `-- name: GetTodoByID :many
     select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."id" = $1
 `
@@ -88,6 +117,28 @@ func (q *Queries) SelectUserBySessionID(ctx context.Context, id string) (SelectU
 	return i, err
 }
 
+const selectUserFromProviderNameAndId = `-- name: SelectUserFromProviderNameAndId :one
+select "id", "username", "avatar_url", "provider_user_id", "provider_name" from "users" where ("users"."provider_user_id" = $1 and "users"."provider_name" = $2) limit 1
+`
+
+type SelectUserFromProviderNameAndIdParams struct {
+	ProviderUserID string
+	ProviderName   ProviderName
+}
+
+func (q *Queries) SelectUserFromProviderNameAndId(ctx context.Context, arg SelectUserFromProviderNameAndIdParams) (User, error) {
+	row := q.db.QueryRow(ctx, selectUserFromProviderNameAndId, arg.ProviderUserID, arg.ProviderName)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.AvatarUrl,
+		&i.ProviderUserID,
+		&i.ProviderName,
+	)
+	return i, err
+}
+
 const updateSessionExpiresAt = `-- name: UpdateSessionExpiresAt :exec
     update "session" set "expires_at" = $1 where "session"."id" = $2
 `
@@ -99,5 +150,19 @@ type UpdateSessionExpiresAtParams struct {
 
 func (q *Queries) UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionExpiresAtParams) error {
 	_, err := q.db.Exec(ctx, updateSessionExpiresAt, arg.ExpiresAt, arg.ID)
+	return err
+}
+
+const updateUserAvatarURL = `-- name: UpdateUserAvatarURL :exec
+    update "users" set "avatar_url" = $1 where "users"."id" = $2
+`
+
+type UpdateUserAvatarURLParams struct {
+	AvatarUrl pgtype.Text
+	ID        pgtype.UUID
+}
+
+func (q *Queries) UpdateUserAvatarURL(ctx context.Context, arg UpdateUserAvatarURLParams) error {
+	_, err := q.db.Exec(ctx, updateUserAvatarURL, arg.AvatarUrl, arg.ID)
 	return err
 }

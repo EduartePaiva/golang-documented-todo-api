@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -69,7 +70,13 @@ func GetGithubCallbackRoute() fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
-		// TODO: read the github necessary data
+		userData := arctic.GithubUserData{}
+		dec := json.NewDecoder(response.Body)
+		err = dec.Decode(&userData)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
 
 		return c.SendString("/github/callback")
 	}

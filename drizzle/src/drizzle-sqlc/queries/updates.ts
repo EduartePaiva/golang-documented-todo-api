@@ -1,5 +1,5 @@
 import db from "@/db";
-import { sessionTable } from "@/db/schema";
+import { sessionTable, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { generateExecQuery } from "./queries-utils";
 
@@ -16,4 +16,9 @@ const updateSessionExpiresAt = generateExecQuery(
     query
 );
 
-export default [updateSessionExpiresAt];
+const updateUserAvatarURL = generateExecQuery(
+    "UpdateUserAvatarURL",
+    db.update(users).set({ avatarUrl: "" }).where(eq(users.id, "")).toSQL()
+);
+
+export default [updateSessionExpiresAt, updateUserAvatarURL];
