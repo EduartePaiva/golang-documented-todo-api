@@ -6,12 +6,9 @@ import (
 	"strings"
 )
 
-type OAuth2Tokens interface {
-}
-
 type gitHub struct {
 	CreateAuthorizationURL    func(state string, scopes []string) string
-	ValidateAuthorizationCode func(code string) (OAuth2Tokens, error)
+	ValidateAuthorizationCode func(ctx context.Context, code string) (OAuth2Tokens, error)
 }
 
 const (
@@ -35,12 +32,12 @@ func GitHub(clientId string, clientSecret string, redirectURI string) gitHub {
 			parsedURL.RawQuery = queryParams.Encode()
 			return parsedURL.String()
 		},
-		ValidateAuthorizationCode: func(code string) (OAuth2Tokens, error) {
+		ValidateAuthorizationCode: func(ctx context.Context, code string) (OAuth2Tokens, error) {
 			body := url.Values{}
 			body.Add("grant_type", "authorization_code")
 			body.Add("code", code)
 			body.Add("redirect_uri", redirectURI)
-			request, err := createOAuth2Request(context.Background(), tokenEndpoint, body)
+			request, err := createOAuth2Request(ctx, tokenEndpoint, body)
 			if err != nil {
 				return nil, err
 			}

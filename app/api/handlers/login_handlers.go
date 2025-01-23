@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -45,7 +46,30 @@ func GetGithubCallbackRoute() fiber.Handler {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 
-		tokens, err := github
+		tokens, err := github.ValidateAuthorizationCode(c.Context(), code)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+		accessToken, err := tokens.AccessToken()
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+
+		request, err := http.NewRequestWithContext(c.Context(), "GET", "https://api.github.com/user", nil)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+		request.Header.Add("Authorization", "Bearer "+accessToken)
+
+		response, err := http.DefaultClient.Do(request)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		// TODO: read the github necessary data
 
 		return c.SendString("/github/callback")
 	}

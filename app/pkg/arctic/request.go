@@ -32,9 +32,31 @@ func sendTokenRequest(req *http.Request) (OAuth2Tokens, error) {
 	if err != nil {
 		return nil, err
 	}
-	data := json.NewDecoder(res.Body)
-	v := make(map[string]string)
-	data.Decode(&v)
+	jsonData := json.NewDecoder(res.Body)
+	data := make(map[string]interface{})
+	err = jsonData.Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := data["error"]; ok {
+		return nil, createOAuth2RequestError(data)
+	}
+	return &oAuth2Tokens{data: data}, nil
+}
 
-	return nil, nil
+func createOAuth2RequestError(result map[string]interface{}) error {
+	code, ok := result["error"].(string)
+	if !ok {
+		return fmt.Errorf("invalid error response")
+	}
+	description, _ := result["error_description"].(string)
+	uri, _ := result["error_uri"].(string)
+	state, _ := result["state"].(string)
+
+	return OAuth2RequestError{
+		code,
+		description,
+		uri,
+		state,
+	}
 }
