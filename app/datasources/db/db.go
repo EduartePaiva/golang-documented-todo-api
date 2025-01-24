@@ -18,6 +18,7 @@ type Database interface {
 		arg repository.SelectUserFromProviderNameAndIdParams,
 	) (repository.User, error)
 	UpdateUserAvatarURL(ctx context.Context, arg repository.UpdateUserAvatarURLParams) error
+	CreateUser(ctx context.Context, arg repository.CreateUserParams) (repository.User, error)
 	WithTx(tx pgx.Tx) *repository.Queries
 }
 

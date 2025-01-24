@@ -32,9 +32,9 @@ func GitHub(clientId string, clientSecret string, redirectURI string) gitHub {
 			queryParams := url.Values{}
 			queryParams.Add("response_type", "code")
 			queryParams.Add("client_id", clientId)
-			queryParams.Add("state", state)
-			queryParams.Add("scope", strings.Join(scopes, " "))
 			queryParams.Add("redirect_uri", redirectURI)
+			queryParams.Add("scope", strings.Join(scopes, " "))
+			queryParams.Add("state", state)
 			parsedURL.RawQuery = queryParams.Encode()
 			return parsedURL.String()
 		},

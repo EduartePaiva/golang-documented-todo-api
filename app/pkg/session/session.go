@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/pkg/crypto"
 	"github.com/golang-documented-todo-api/app/pkg/encoding"
+	"github.com/golang-documented-todo-api/app/pkg/env"
 	"github.com/golang-documented-todo-api/app/repository"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -66,4 +68,20 @@ func ValidateSessionToken(
 		)
 	}
 	return result, nil
+}
+
+func SetSessionTokenCookie(
+	sessionToken string,
+	expiresAt time.Time,
+	cookie func(cookie *fiber.Cookie),
+) {
+	cookie(&fiber.Cookie{
+		Name:     "session",
+		Value:    sessionToken,
+		HTTPOnly: true,
+		SameSite: "lax",
+		Secure:   env.Get().GoEnv == "production",
+		Expires:  expiresAt,
+		Path:     "/",
+	})
 }

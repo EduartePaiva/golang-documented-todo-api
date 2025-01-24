@@ -37,7 +37,7 @@ func GetGithubRoute() fiber.Handler {
 		return c.Redirect(url)
 	}
 }
-func GetGithubCallbackRoute() fiber.Handler {
+func GetGithubCallbackRoute(service db.Database) fiber.Handler {
 	github := arctic.GitHub(
 		env.Get().OAuth2.GitHub.ClientID,
 		env.Get().OAuth2.GitHub.ClientSecret,
@@ -83,7 +83,7 @@ func GetGithubCallbackRoute() fiber.Handler {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 
-		newUser, err := db.GetOrCreateNewUserAndReturn(nil, c.Context(), repository.User{
+		newUser, err := db.GetOrCreateNewUserAndReturn(service, c.Context(), repository.User{
 			Username: userData.Name,
 			AvatarUrl: pgtype.Text{
 				String: userData.AvatarURL,
@@ -101,8 +101,12 @@ func GetGithubCallbackRoute() fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
-		session := session.CreateSession(c.Context(), nil, sessionToken, newUser.ID)
-
-		return c.SendString("/github/callback")
+		newSession, err := session.CreateSession(c.Context(), service, sessionToken, newUser.ID)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
+		return c.Redirect("/")
 	}
 }
