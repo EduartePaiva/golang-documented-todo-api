@@ -36,7 +36,8 @@ func CreateSession(
 		ID:     sessionId,
 		UserID: userId,
 		ExpiresAt: pgtype.Timestamptz{
-			Time: time.Now().Add(time.Hour * 24 * 30),
+			Time:  time.Now().Add(time.Hour * 24 * 30),
+			Valid: true,
 		},
 	}
 	err := service.CreateSession(ctx, session)

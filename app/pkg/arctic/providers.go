@@ -74,7 +74,7 @@ func Google(clientId string, clientSecret string, redirectURI string) google {
 				scopes,
 			)
 		},
-		ValidateAuthorizationCode: func(ctx context.Context, code string) (OAuth2Tokens, error) {},
+		// ValidateAuthorizationCode: func(ctx context.Context, code string) (OAuth2Tokens, error) {},
 	}
 }
 

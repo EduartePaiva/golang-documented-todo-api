@@ -28,6 +28,8 @@ func GetGithubRoute() fiber.Handler {
 		}
 		url := github.CreateAuthorizationURL(state, []string{})
 		c.Cookie(&fiber.Cookie{
+			Name:     "github_oauth_state",
+			Value:    state,
 			Path:     "/",
 			Secure:   env.Get().GoEnv == "production",
 			HTTPOnly: true,
@@ -121,8 +123,23 @@ func GetGoogleRoute() fiber.Handler {
 		if err != nil {
 			return c.SendStatus(http.StatusInternalServerError)
 		}
-		url := google.CreateAuthorizationURL(state, []string{})
+		codeVerifier, err := arctic.GenerateCodeVerifier()
+		if err != nil {
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+		url := google.CreateAuthorizationURL(state, codeVerifier, []string{"openid", "profile"})
 		c.Cookie(&fiber.Cookie{
+			Name:     "google_oauth_state",
+			Value:    state,
+			Path:     "/",
+			Secure:   env.Get().GoEnv == "production",
+			HTTPOnly: true,
+			MaxAge:   60 * 10,
+			SameSite: "lax",
+		})
+		c.Cookie(&fiber.Cookie{
+			Name:     "google_code_verifier",
+			Value:    codeVerifier,
 			Path:     "/",
 			Secure:   env.Get().GoEnv == "production",
 			HTTPOnly: true,
