@@ -25,7 +25,7 @@ func TestGenerateSessionToken(t *testing.T) {
 
 func TestCreateSession(t *testing.T) {
 	mockSession := new(SessionServiceMock)
-	session := CreateSession(
+	session, err := CreateSession(
 		context.Background(),
 		mockSession,
 		"testing",
@@ -33,7 +33,7 @@ func TestCreateSession(t *testing.T) {
 			Bytes: [16]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 15, 16},
 			Valid: true,
 		})
-
+	assert.NoError(t, err)
 	// test that the uuid is the same
 	assert.Equal(t, session.UserID, pgtype.UUID{
 		Bytes: [16]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 15, 16},

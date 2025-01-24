@@ -27,7 +27,7 @@ func CreateSession(
 	service db.SessionService,
 	token string,
 	userId pgtype.UUID,
-) repository.Session {
+) (repository.Session, error) {
 	sessionId := encoding.EncodeHexLowerCase(crypto.Sha256([]byte(token)))
 
 	session := repository.CreateSessionParams{
@@ -37,8 +37,8 @@ func CreateSession(
 			Time: time.Now().Add(time.Hour * 24 * 30),
 		},
 	}
-	service.CreateSession(ctx, session)
-	return repository.Session(session)
+	err := service.CreateSession(ctx, session)
+	return repository.Session(session), err
 }
 
 func ValidateSessionToken(

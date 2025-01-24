@@ -20,6 +20,10 @@ func GetOrCreateNewUserAndReturn(service UserServices, ctx context.Context, user
 		}
 		return currentUser, err
 	}
-
-	return currentUser, err
+	return service.CreateUser(ctx, repository.CreateUserParams{
+		Username:       user.Username,
+		AvatarUrl:      user.AvatarUrl,
+		ProviderUserID: user.ProviderUserID,
+		ProviderName:   user.ProviderName,
+	})
 }

@@ -3,14 +3,14 @@ package db
 import (
 	"context"
 
-	"github.com/golang-documented-todo-api/app/repository"
+	. "github.com/golang-documented-todo-api/app/repository"
 )
 
 // Service is an interface from which our api module can access our repository of all our models
 type SessionService interface {
-	CreateSession(ctx context.Context, arg repository.CreateSessionParams) error
-	SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error)
-	UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error
+	CreateSession(ctx context.Context, arg CreateSessionParams) error
+	SelectUserBySessionID(ctx context.Context, id string) (SelectUserBySessionIDRow, error)
+	UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionExpiresAtParams) error
 }
 
 type sessionService struct {
@@ -21,15 +21,15 @@ func NewService(db Database) SessionService {
 	return &sessionService{db: db}
 }
 
-func (s *sessionService) CreateSession(ctx context.Context, arg repository.CreateSessionParams) error {
+func (s *sessionService) CreateSession(ctx context.Context, arg CreateSessionParams) error {
 	return s.db.CreateSession(ctx, arg)
 }
 
-func (s *sessionService) SelectUserBySessionID(ctx context.Context, id string) (repository.SelectUserBySessionIDRow, error) {
+func (s *sessionService) SelectUserBySessionID(ctx context.Context, id string) (SelectUserBySessionIDRow, error) {
 	return s.db.SelectUserBySessionID(ctx, id)
 }
 
-func (s *sessionService) UpdateSessionExpiresAt(ctx context.Context, arg repository.UpdateSessionExpiresAtParams) error {
+func (s *sessionService) UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionExpiresAtParams) error {
 	return s.db.UpdateSessionExpiresAt(ctx, arg)
 }
 
@@ -37,9 +37,10 @@ func (s *sessionService) UpdateSessionExpiresAt(ctx context.Context, arg reposit
 type UserServices interface {
 	SelectUserFromProviderNameAndId(
 		ctx context.Context,
-		arg repository.SelectUserFromProviderNameAndIdParams,
-	) (repository.User, error)
-	UpdateUserAvatarURL(ctx context.Context, arg repository.UpdateUserAvatarURLParams) error
+		arg SelectUserFromProviderNameAndIdParams,
+	) (User, error)
+	UpdateUserAvatarURL(ctx context.Context, arg UpdateUserAvatarURLParams) error
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 }
 type userService struct {
 	db Database
@@ -47,7 +48,7 @@ type userService struct {
 
 func (s *userService) SelectUserFromProviderNameAndId(
 	ctx context.Context,
-	arg repository.SelectUserFromProviderNameAndIdParams,
-) (repository.User, error) {
+	arg SelectUserFromProviderNameAndIdParams,
+) (User, error) {
 	return s.db.SelectUserFromProviderNameAndId(ctx, arg)
 }
