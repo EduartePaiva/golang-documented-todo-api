@@ -12,3 +12,16 @@ func GenerateState() (string, error) {
 	}
 	return encoding.EncodeBase64urlNoPadding(randomValues), nil
 }
+
+func CreateS256CodeChallenge(codeVerifier string) string {
+	codeChallengeBytes := crypto.Sha256([]byte(codeVerifier))
+	return encoding.EncodeBase64urlNoPadding(codeChallengeBytes)
+}
+
+func GenerateCodeVerifier() (string, error) {
+	randomValues, err := crypto.GetRandomValues(32)
+	if err != nil {
+		return "", err
+	}
+	return encoding.EncodeBase64urlNoPadding(randomValues), nil
+}

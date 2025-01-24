@@ -22,6 +22,11 @@ type envVariables struct {
 			ClientSecret string `env:"GITHUB_CLIENT_SECRET,required"`
 			RedirectURI  string `env:"GITHUB_REDIRECT_URI,required"`
 		}
+		Google struct {
+			ClientID     string `env:"GOOGLE_CLIENT_ID,required"`
+			ClientSecret string `env:"GOOGLE_CLIENT_SECRET,required"`
+			RedirectURI  string `env:"GOOGLE_REDIRECT_URI,required"`
+		}
 	}
 	BasePath string `env:"BASE_PATH,default=."`
 	GoEnv    string `env:"GO_ENV,default=production"`
