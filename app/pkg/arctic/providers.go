@@ -6,14 +6,6 @@ import (
 	"strings"
 )
 
-const (
-	githubAuthorizationEndpoint   = "https://github.com/login/oauth/authorize"
-	githubTokenEndpoint           = "https://github.com/login/oauth/access_token"
-	googleAuthorizationEndpoint   = "https://accounts.google.com/o/oauth2/v2/auth"
-	googleTokenEndpoint           = "https://oauth2.googleapis.com/token"
-	googleTokenRevocationEndpoint = "https://oauth2.googleapis.com/revoke"
-)
-
 type gitHub struct {
 	CreateAuthorizationURL    func(state string, scopes []string) string
 	ValidateAuthorizationCode func(ctx context.Context, code string) (OAuth2Tokens, error)
@@ -26,9 +18,13 @@ type GithubUserData struct {
 }
 
 func GitHub(clientId string, clientSecret string, redirectURI string) gitHub {
+	const (
+		authorizationEndpoint string = "https://github.com/login/oauth/authorize"
+		tokenEndpoint         string = "https://github.com/login/oauth/access_token"
+	)
 	return gitHub{
 		CreateAuthorizationURL: func(state string, scopes []string) string {
-			parsedURL, err := url.Parse(githubAuthorizationEndpoint)
+			parsedURL, err := url.Parse(authorizationEndpoint)
 			if err != nil {
 				panic("invalid authorizationEndpoint")
 			}
@@ -46,7 +42,7 @@ func GitHub(clientId string, clientSecret string, redirectURI string) gitHub {
 			body.Add("grant_type", "authorization_code")
 			body.Add("code", code)
 			body.Add("redirect_uri", redirectURI)
-			request, err := createOAuth2Request(ctx, githubTokenEndpoint, body)
+			request, err := createOAuth2Request(ctx, tokenEndpoint, body)
 			if err != nil {
 				return nil, err
 			}
@@ -59,22 +55,31 @@ func GitHub(clientId string, clientSecret string, redirectURI string) gitHub {
 
 type google struct {
 	CreateAuthorizationURL    func(state string, codeVerifier string, scopes []string) string
-	ValidateAuthorizationCode func(ctx context.Context, code string) (OAuth2Tokens, error)
+	ValidateAuthorizationCode func(ctx context.Context, code string, codeVerifier string) (OAuth2Tokens, error)
 }
 
 func Google(clientId string, clientSecret string, redirectURI string) google {
-	client := OAuth2Client(clientId, clientSecret, &redirectURI)
+	const (
+		authorizationEndpoint   string = "https://accounts.google.com/o/oauth2/v2/auth"
+		tokenEndpoint           string = "https://oauth2.googleapis.com/token"
+		tokenRevocationEndpoint string = "https://oauth2.googleapis.com/revoke"
+	)
+
+	client := OAuth2Client(clientId, &clientSecret, &redirectURI)
+
 	return google{
 		CreateAuthorizationURL: func(state string, codeVerifier string, scopes []string) string {
 			return client.CreateAuthorizationURLWithPKCE(
-				googleAuthorizationEndpoint,
+				authorizationEndpoint,
 				state,
 				S256,
 				codeVerifier,
 				scopes,
 			)
 		},
-		// ValidateAuthorizationCode: func(ctx context.Context, code string) (OAuth2Tokens, error) {},
+		ValidateAuthorizationCode: func(ctx context.Context, code, codeVerifier string) (OAuth2Tokens, error) {
+			return client.ValidateAuthorizationCode(ctx, tokenEndpoint, code, &codeVerifier)
+		},
 	}
 }
 
@@ -94,9 +99,15 @@ type oAuth2Client struct {
 		codeVerifier string,
 		scopes []string,
 	) string
+	ValidateAuthorizationCode func(
+		ctx context.Context,
+		tokenEndpoint string,
+		code string,
+		codeVerifier *string,
+	) (OAuth2Tokens, error)
 }
 
-func OAuth2Client(clientId string, clientSecret string, redirectURI *string) oAuth2Client {
+func OAuth2Client(clientId string, clientPassword *string, redirectURI *string) oAuth2Client {
 	return oAuth2Client{
 		CreateAuthorizationURL: func(authorizationEndpoint, state string, scopes []string) string {
 			url := url.Values{}
@@ -138,6 +149,30 @@ func OAuth2Client(clientId string, clientSecret string, redirectURI *string) oAu
 				url.Add("scope", strings.Join(scopes, " "))
 			}
 			return url.Encode()
+		},
+		ValidateAuthorizationCode: func(ctx context.Context, tokenEndpoint, code string, codeVerifier *string) (OAuth2Tokens, error) {
+			body := url.Values{}
+			body.Add("grant_type", "authorization_code")
+			body.Add("code", code)
+			if redirectURI != nil {
+				body.Add("redirect_uri", *redirectURI)
+			}
+			if codeVerifier != nil {
+				body.Add("code_verifier", *codeVerifier)
+			}
+			if clientPassword == nil {
+				body.Add("client_id", clientId)
+			}
+
+			request, err := createOAuth2Request(ctx, tokenEndpoint, body)
+			if err != nil {
+				return nil, err
+			}
+			if clientPassword != nil {
+				encodedCredentials := encodeBasicCredentials(clientId, *clientPassword)
+				request.Header.Add("Authorization", "Basic "+encodedCredentials)
+			}
+			return sendTokenRequest(request)
 		},
 	}
 }

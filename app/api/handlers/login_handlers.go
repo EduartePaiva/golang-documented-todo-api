@@ -150,7 +150,7 @@ func GetGoogleRoute() fiber.Handler {
 	}
 }
 func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
-	github := arctic.GitHub(
+	google := arctic.Google(
 		env.Get().OAuth2.GitHub.ClientID,
 		env.Get().OAuth2.GitHub.ClientSecret,
 		env.Get().OAuth2.GitHub.RedirectURI,
@@ -159,66 +159,24 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 		state := c.Query("state")
 		code := c.Query("code")
 		storedState := c.Cookies("github_oauth_state")
+		codeVerifier := c.Cookies("google_code_verifier")
 
-		if state == "" || code == "" || storedState == "" || storedState != state {
+		if state == "" || code == "" || storedState == "" || codeVerifier == "" || storedState != state {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 
-		tokens, err := github.ValidateAuthorizationCode(c.Context(), code)
+		tokens, err := google.ValidateAuthorizationCode(c.Context(), code, codeVerifier)
 		if err != nil {
-			fmt.Println(err)
 			return c.SendStatus(http.StatusInternalServerError)
 		}
-		accessToken, err := tokens.AccessToken()
+		idToken, err := tokens.IdToken()
 		if err != nil {
+			fmt.Println("google should return an idToken. Check if the scopes are properly set")
 			fmt.Println(err)
-			return c.SendStatus(http.StatusInternalServerError)
+			return c.SendStatus(http.StatusBadRequest)
 		}
+		claims, err := decodeIdToken(idToken)
 
-		request, err := http.NewRequestWithContext(c.Context(), "GET", "https://api.github.com/user", nil)
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusInternalServerError)
-		}
-		request.Header.Add("Authorization", "Bearer "+accessToken)
-
-		response, err := http.DefaultClient.Do(request)
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusBadRequest)
-		}
-		userData := arctic.GithubUserData{}
-		dec := json.NewDecoder(response.Body)
-		err = dec.Decode(&userData)
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusBadRequest)
-		}
-
-		newUser, err := db.GetOrCreateNewUserAndReturn(service, c.Context(), repository.User{
-			Username: userData.Name,
-			AvatarUrl: pgtype.Text{
-				String: userData.AvatarURL,
-				Valid:  true,
-			},
-			ProviderUserID: strconv.Itoa(int(userData.ID)),
-			ProviderName:   repository.ProviderNameGithub,
-		})
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusBadRequest)
-		}
-		sessionToken, err := session.GenerateSessionToken()
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusBadRequest)
-		}
-		newSession, err := session.CreateSession(c.Context(), service, sessionToken, newUser.ID)
-		if err != nil {
-			fmt.Println(err)
-			return c.SendStatus(http.StatusBadRequest)
-		}
-		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
 		return c.Redirect("/")
 	}
 }
