@@ -58,7 +58,7 @@ type google struct {
 	ValidateAuthorizationCode func(ctx context.Context, code string, codeVerifier string) (OAuth2Tokens, error)
 }
 type GoogleUserData struct {
-	ID        int64  `json:"sub"`
+	ID        string `json:"sub"`
 	AvatarURL string `json:"picture"`
 	Name      string `json:"name"`
 }
@@ -115,18 +115,23 @@ type oAuth2Client struct {
 func OAuth2Client(clientId string, clientPassword *string, redirectURI *string) oAuth2Client {
 	return oAuth2Client{
 		CreateAuthorizationURL: func(authorizationEndpoint, state string, scopes []string) string {
-			url := url.Values{}
-			url.Add("response_type", "code")
-			url.Add("client_id", clientId)
-			if redirectURI != nil {
-				url.Add("redirect_uri", *redirectURI)
+			parsedURL, err := url.Parse(authorizationEndpoint)
+			if err != nil {
+				panic("invalid authorizationEndpoint")
 			}
-			url.Add("state", state)
+			queryParams := url.Values{}
+			queryParams.Add("response_type", "code")
+			queryParams.Add("client_id", clientId)
+			if redirectURI != nil {
+				queryParams.Add("redirect_uri", *redirectURI)
+			}
+			queryParams.Add("state", state)
 			if len(scopes) > 0 {
-				url.Add("scope", strings.Join(scopes, " "))
+				queryParams.Add("scope", strings.Join(scopes, " "))
 			}
 
-			return url.Encode()
+			parsedURL.RawQuery = queryParams.Encode()
+			return parsedURL.String()
 		},
 		CreateAuthorizationURLWithPKCE: func(
 			authorizationEndpoint string,
@@ -135,25 +140,30 @@ func OAuth2Client(clientId string, clientPassword *string, redirectURI *string) 
 			codeVerifier string,
 			scopes []string,
 		) string {
-			url := url.Values{}
-			url.Add("response_type", "code")
-			url.Add("client_id", clientId)
-			if redirectURI != nil {
-				url.Add("redirect_uri", *redirectURI)
+			parsedURL, err := url.Parse(authorizationEndpoint)
+			if err != nil {
+				panic("invalid authorizationEndpoint")
 			}
-			url.Add("state", state)
+			queryParams := url.Values{}
+			queryParams.Add("response_type", "code")
+			queryParams.Add("client_id", clientId)
+			if redirectURI != nil {
+				queryParams.Add("redirect_uri", *redirectURI)
+			}
+			queryParams.Add("state", state)
 			if codeChallenge == S256 {
 				codeChallenge := CreateS256CodeChallenge(codeVerifier)
-				url.Add("code_challenge_method", "S256")
-				url.Add("code_challenge", codeChallenge)
+				queryParams.Add("code_challenge_method", "S256")
+				queryParams.Add("code_challenge", codeChallenge)
 			} else if codeChallenge == Plain {
-				url.Add("code_challenge_method", "plain")
-				url.Add("code_challenge", codeVerifier)
+				queryParams.Add("code_challenge_method", "plain")
+				queryParams.Add("code_challenge", codeVerifier)
 			}
 			if len(scopes) > 0 {
-				url.Add("scope", strings.Join(scopes, " "))
+				queryParams.Add("scope", strings.Join(scopes, " "))
 			}
-			return url.Encode()
+			parsedURL.RawQuery = queryParams.Encode()
+			return parsedURL.String()
 		},
 		ValidateAuthorizationCode: func(ctx context.Context, tokenEndpoint, code string, codeVerifier *string) (OAuth2Tokens, error) {
 			body := url.Values{}

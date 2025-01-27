@@ -102,5 +102,5 @@ type OAuth2RequestError struct {
 }
 
 func (e OAuth2RequestError) Error() string {
-	return fmt.Sprintf("oauth2 request error: %v", e.code)
+	return fmt.Sprintf("oauth2 request; code: %v, description: %v, uri: %v, state: %v", e.code, e.description, e.uri, e.state)
 }

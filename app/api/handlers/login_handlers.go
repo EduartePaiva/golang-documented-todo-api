@@ -151,14 +151,14 @@ func GetGoogleRoute() fiber.Handler {
 }
 func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 	google := arctic.Google(
-		env.Get().OAuth2.GitHub.ClientID,
-		env.Get().OAuth2.GitHub.ClientSecret,
-		env.Get().OAuth2.GitHub.RedirectURI,
+		env.Get().OAuth2.Google.ClientID,
+		env.Get().OAuth2.Google.ClientSecret,
+		env.Get().OAuth2.Google.RedirectURI,
 	)
 	return func(c *fiber.Ctx) error {
 		state := c.Query("state")
 		code := c.Query("code")
-		storedState := c.Cookies("github_oauth_state")
+		storedState := c.Cookies("google_oauth_state")
 		codeVerifier := c.Cookies("google_code_verifier")
 
 		if state == "" || code == "" || storedState == "" || codeVerifier == "" || storedState != state {
@@ -167,6 +167,8 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 
 		tokens, err := google.ValidateAuthorizationCode(c.Context(), code, codeVerifier)
 		if err != nil {
+			fmt.Println(err)
+			fmt.Println("error 1")
 			return c.SendStatus(http.StatusInternalServerError)
 		}
 		idToken, err := tokens.IdToken()
@@ -181,7 +183,28 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
+		newUser, err := db.GetOrCreateNewUserAndReturn(service, c.Context(), repository.User{
+			Username:       userData.Name,
+			AvatarUrl:      pgtype.Text{String: userData.AvatarURL, Valid: len(userData.AvatarURL) > 0},
+			ProviderUserID: userData.ID,
+			ProviderName:   repository.ProviderNameGoogle,
+		})
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
 
+		sessionToken, err := session.GenerateSessionToken()
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		newSession, err := session.CreateSession(c.Context(), service, sessionToken, newUser.ID)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
 		return c.Redirect("/")
 	}
 }
