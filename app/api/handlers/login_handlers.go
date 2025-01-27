@@ -175,7 +175,12 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
-		claims, err := decodeIdToken(idToken)
+		userData := arctic.GoogleUserData{}
+		err = arctic.DecodeIdToken(idToken, &userData)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
 
 		return c.Redirect("/")
 	}

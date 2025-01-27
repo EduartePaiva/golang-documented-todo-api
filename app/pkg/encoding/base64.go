@@ -20,6 +20,19 @@ func encodeBase64_internal(bytes []byte, alphabet string, padding bool) string {
 	if padding {
 		return enc.EncodeToString(bytes)
 	}
-	encNoPad := enc.WithPadding(-1)
+	encNoPad := enc.WithPadding(base64.NoPadding)
 	return encNoPad.EncodeToString(bytes)
+}
+
+func DecodeBase64urlIgnorePadding(encoded string) ([]byte, error) {
+	return decodeBase64_internal(encoded, base64urlAlphabet, false)
+}
+
+func decodeBase64_internal(encoded string, alphabet string, padding bool) ([]byte, error) {
+	enc := base64.NewEncoding(alphabet)
+	// if padding is false mutate to no padding
+	if !padding {
+		enc = enc.WithPadding(base64.NoPadding)
+	}
+	return enc.DecodeString(encoded)
 }

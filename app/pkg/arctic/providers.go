@@ -57,6 +57,11 @@ type google struct {
 	CreateAuthorizationURL    func(state string, codeVerifier string, scopes []string) string
 	ValidateAuthorizationCode func(ctx context.Context, code string, codeVerifier string) (OAuth2Tokens, error)
 }
+type GoogleUserData struct {
+	ID        int64  `json:"sub"`
+	AvatarURL string `json:"picture"`
+	Name      string `json:"name"`
+}
 
 func Google(clientId string, clientSecret string, redirectURI string) google {
 	const (
