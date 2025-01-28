@@ -1,17 +1,11 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import LoginBtn from "./components/login-btn";
 import TodoItem from "./components/todo-item";
 import { Button } from "./components/ui/button";
-
-export interface TodoItemType {
-    text: string;
-    done: boolean;
-    updatedAt: Date;
-    createdAt: Date;
-}
+import { useTodoContext } from "./context/todo-context";
 
 function App() {
-    const [todos, addTodo] = useState<TodoItemType[]>([]);
+    const { todos, createTodo } = useTodoContext();
 
     return (
         <div className="">
@@ -23,24 +17,14 @@ function App() {
                 />
                 <Button
                     className="absolute left-[50%] top-12 -translate-x-[50%]"
-                    onClick={() => {
-                        addTodo((prev) => {
-                            prev.push({
-                                createdAt: new Date(),
-                                text: "type something...",
-                                done: false,
-                                updatedAt: new Date(),
-                            });
-                            return [...prev];
-                        });
-                    }}
+                    onClick={createTodo}
                 >
                     Create Todo
                 </Button>
             </div>
             <div className="flex flex-col items-center gap-2">
                 {todos.map((todo) => (
-                    <Fragment key={todo.createdAt.toISOString()}>
+                    <Fragment key={todo.createdAt}>
                         <TodoItem {...todo} />
                     </Fragment>
                 ))}
