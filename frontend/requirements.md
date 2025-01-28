@@ -1,0 +1,3 @@
+- The todo will have drag and drop to sort them
+- The todo can be marked as completed and unmarked
+- The todo can be deleted, if not completed it'll ask are you sure
