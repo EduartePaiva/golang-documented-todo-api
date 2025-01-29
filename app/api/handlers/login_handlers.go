@@ -214,19 +214,16 @@ type getUserResponse struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
-func GetUser(service db.SessionService) fiber.Handler {
+func GetUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		sessionCookie := c.Cookies("session")
-		if sessionCookie == "" {
-			return c.SendStatus(http.StatusUnauthorized)
-		}
-		result, err := session.ValidateSessionToken(c.Context(), service, sessionCookie)
-		if err != nil {
-			return c.SendStatus(http.StatusUnauthorized)
+		session, ok := session.GetStoredSession(c)
+		if !ok {
+			fmt.Println("a stored session was not found")
+			return c.SendStatus(http.StatusInternalServerError)
 		}
 		response := getUserResponse{
-			Username:  result.Username,
-			AvatarURL: result.AvatarUrl.String,
+			Username:  session.Username,
+			AvatarURL: session.AvatarUrl.String,
 		}
 		return c.JSON(response)
 	}
