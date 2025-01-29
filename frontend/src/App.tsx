@@ -24,7 +24,7 @@ function App() {
             </div>
             <div className="flex flex-col items-center gap-2">
                 {todos.map((todo) => (
-                    <Fragment key={todo.createdAt}>
+                    <Fragment key={todo.id}>
                         <TodoItem {...todo} />
                     </Fragment>
                 ))}

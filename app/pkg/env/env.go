@@ -1,6 +1,7 @@
 package env
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
@@ -28,8 +29,9 @@ type envVariables struct {
 			RedirectURI  string `env:"GOOGLE_REDIRECT_URI,required"`
 		}
 	}
-	BasePath string `env:"BASE_PATH,default=."`
-	GoEnv    string `env:"GO_ENV,default=production"`
+	BasePath    string `env:"BASE_PATH,default=."`
+	GoEnv       string `env:"GO_ENV,default=production"`
+	FrontendURL string `env:"FRONTEND_URL,default="`
 }
 
 var (
@@ -44,6 +46,8 @@ func loadAndValidateEnv() *envVariables {
 	if err != nil {
 		log.Fatal("❌ ERROR DECODING ENVIRONMENT VARIABLES: ", err)
 	}
+
+	fmt.Println("frontend url: " + env.FrontendURL)
 
 	// return the env struct
 	return &env

@@ -1,5 +1,3 @@
-import React from "react";
-import { Button, ButtonProps } from "./ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,8 +6,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ProviderLoginBtn from "./provider-button";
+import React from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import ProviderLoginBtn from "./provider-button";
+import { Button, ButtonProps } from "./ui/button";
 
 type LoginBtnProps = ButtonProps & React.RefAttributes<HTMLButtonElement>;
 
@@ -26,7 +26,7 @@ export default function LoginBtn(props: LoginBtnProps) {
                     <ProviderLoginBtn
                         LogoIcon={FaGoogle}
                         name="Google"
-                        href="/api/v1/login/google"
+                        href={`/api/v1/login/google`}
                         className="text-[#db4639] hover:text-[#db4639]/90"
                     />
                 </DropdownMenuItem>
@@ -34,7 +34,7 @@ export default function LoginBtn(props: LoginBtnProps) {
                     <ProviderLoginBtn
                         LogoIcon={FaGithub}
                         name="Github"
-                        href="/api/v1/login/github"
+                        href={`/api/v1/login/github`}
                     />
                 </DropdownMenuItem>
             </DropdownMenuContent>

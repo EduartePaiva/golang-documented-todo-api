@@ -34,9 +34,9 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         setTodo((prev) => {
             prev.push({
                 id: crypto.randomUUID(),
-                createdAt: new Date().toJSON(),
                 text: "type something...",
                 done: false,
+                createdAt: new Date().toJSON(),
                 updatedAt: new Date().toJSON(),
             });
             setStorage(prev);

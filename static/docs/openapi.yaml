@@ -300,3 +300,47 @@ paths:
               schema:
                 type: string
                 example: session=abc123; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Wed, 22 Jan 2025 12:34:56 GMT
+  /login/getuser:
+    get:
+      tags: [Auth]
+      description: Return the username and avatar_url if the user is logged in
+      parameters:
+        - in: cookie
+          name: session
+          required: false
+          schema:
+            default: some_session_id
+            type: string
+            description: The session id when the user logged in
+      responses:
+        200:
+          description: the user name avatar url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    examples:
+                      - Eduarte
+                  avatar_url:
+                    type: string
+                    examples:
+                      - https:://api.google/my_avatar_image
+        401:
+          description: In case the user is unauthenticated
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - Unauthorized
+        500:
+          description: In case a server error happens
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - internal server error

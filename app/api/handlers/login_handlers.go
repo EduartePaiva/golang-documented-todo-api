@@ -109,7 +109,7 @@ func GetGithubCallbackRoute(service db.Database) fiber.Handler {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
-		return c.Redirect("/")
+		return c.Redirect(env.Get().FrontendURL + "/")
 	}
 }
 func GetGoogleRoute() fiber.Handler {
@@ -205,6 +205,29 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
-		return c.Redirect("/")
+		return c.Redirect(env.Get().FrontendURL + "/")
+	}
+}
+
+type getUserResponse struct {
+	Username  string `json:"name"`
+	AvatarURL string `json:"avatar_url"`
+}
+
+func GetUser(service db.SessionService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		sessionCookie := c.Cookies("session")
+		if sessionCookie == "" {
+			return c.SendStatus(http.StatusUnauthorized)
+		}
+		result, err := session.ValidateSessionToken(c.Context(), service, sessionCookie)
+		if err != nil {
+			return c.SendStatus(http.StatusUnauthorized)
+		}
+		response := getUserResponse{
+			Username:  result.Username,
+			AvatarURL: result.AvatarUrl.String,
+		}
+		return c.JSON(response)
 	}
 }
