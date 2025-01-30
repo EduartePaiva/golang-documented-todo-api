@@ -34,23 +34,26 @@ export default function TodoProvider({ children }: TodoProviderProps) {
     });
     const createTodo = () => {
         setTodo((prev) => {
-            prev.push({
-                id: crypto.randomUUID(),
-                text: "type something...",
-                done: false,
-                createdAt: new Date().toJSON(),
-                updatedAt: new Date().toJSON(),
-            });
-            setStorage(prev);
-            return [...prev];
+            const current = [
+                ...prev,
+                {
+                    id: crypto.randomUUID(),
+                    text: "type something...",
+                    done: false,
+                    createdAt: new Date().toJSON(),
+                    updatedAt: new Date().toJSON(),
+                },
+            ];
+
+            setStorage(current);
+            return current;
         });
     };
     const deleteTodo = (id: string) => {
         setTodo((prev) => {
-            const idx = prev.findIndex((todo) => todo.id === id);
-            prev.splice(idx, 1);
-            setStorage(prev);
-            return [...prev];
+            const current = prev.filter((todo) => todo.id !== id);
+            setStorage(current);
+            return current;
         });
     };
 
@@ -69,15 +72,22 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         // this line below prevents that a scheduled update will happens before 3s
         lastScheduleCall.current = Date.now();
         setTodo((prev) => {
-            const idx = prev.findIndex((todo) => todo.id === id);
-            if (text !== undefined) {
-                prev[idx].text = text;
-            }
-            if (done !== undefined) {
-                prev[idx].done = done;
-            }
-            setStorage(prev);
-            return [...prev];
+            const current = prev.map((todo) => {
+                if (todo.id === id) {
+                    const newTodo: TodoItemType = { ...todo };
+                    if (text !== undefined) {
+                        newTodo.text = text;
+                    }
+                    if (done !== undefined) {
+                        newTodo.done = done;
+                    }
+                    return newTodo;
+                }
+                return todo;
+            });
+
+            setStorage(current);
+            return current;
         });
     };
 
