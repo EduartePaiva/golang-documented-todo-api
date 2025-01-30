@@ -60,6 +60,7 @@ export default function UserProvider({ children }: UserProviderProps) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useUserContext() {
     const context = useContext(TodoContext);
     if (context === null) {

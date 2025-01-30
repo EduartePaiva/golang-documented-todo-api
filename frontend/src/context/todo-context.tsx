@@ -23,7 +23,7 @@ function setStorage(todos: TodoItemType[]) {
 }
 
 export default function TodoProvider({ children }: TodoProviderProps) {
-    const lastScheduleCall = useRef(Date.now());
+    const lastTimeoutId = useRef(-1);
 
     const [todos, setTodo] = useState<TodoItemType[]>(() => {
         const localTodo = window.localStorage.getItem("todos") as null | string;
@@ -69,8 +69,9 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         if (text === undefined && done === undefined) {
             return;
         }
-        // this line below prevents that a scheduled update will happens before 3s
-        lastScheduleCall.current = Date.now();
+        // this line below clear last timeout if it wasn't cleaned already
+        window.clearTimeout(lastTimeoutId.current);
+        console.log("saving todo at timeout: ", lastTimeoutId.current);
         setTodo((prev) => {
             const current = prev.map((todo) => {
                 if (todo.id === id) {
@@ -92,12 +93,13 @@ export default function TodoProvider({ children }: TodoProviderProps) {
     };
 
     const scheduleTextUpdate = (text: string, id: string) => {
-        lastScheduleCall.current = Date.now();
-        setTimeout(() => {
-            if (lastScheduleCall.current + 3000 <= Date.now()) {
-                updateTodo({ id, text });
-            }
-        }, 3000);
+        // clear the last timeout
+        window.clearTimeout(lastTimeoutId.current);
+        // save the current timeout id
+        lastTimeoutId.current = window.setTimeout(
+            () => updateTodo({ id, text }),
+            3000
+        );
     };
 
     return (
@@ -115,6 +117,7 @@ export default function TodoProvider({ children }: TodoProviderProps) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTodoContext() {
     const context = useContext(TodoContext);
     if (context === null) {
