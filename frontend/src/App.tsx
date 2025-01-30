@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import LoginBtn from "./components/login-btn";
+import Header from "./components/header";
 import TodoItem from "./components/todo-item";
 import { Button } from "./components/ui/button";
 import { useTodoContext } from "./context/todo-context";
@@ -9,12 +9,8 @@ function App() {
 
     return (
         <div className="">
+            <Header />
             <div className="relative h-36 w-full">
-                <LoginBtn
-                    className="absolute left-[calc(100%-0.75rem)] top-3 -translate-x-[100%]"
-                    variant={"outline"}
-                    size={"sm"}
-                />
                 <Button
                     className="absolute left-[50%] top-12 -translate-x-[50%]"
                     onClick={createTodo}
