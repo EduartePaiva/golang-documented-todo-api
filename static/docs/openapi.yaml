@@ -344,3 +344,28 @@ paths:
                 type: string
                 examples:
                   - internal server error
+  /login/logout:
+    get:
+      tags: [Auth]
+      description: Logout the user from his current session
+      responses:
+        302:
+          description: Redirects to the homepage after a successful logout
+          headers:
+            Location:
+              description: /
+              schema:
+                type: string
+            Set-Cookie:
+              description: The session cookie will be set to empty.
+              schema:
+                type: string
+                example: session=; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Wed, 22 Jan 2025 12:34:56 GMT
+        500:
+          description: In case a server error happens
+          content:
+            text/plain:
+              schema:
+                type: string
+                examples:
+                  - internal server error

@@ -1,5 +1,5 @@
+import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,12 +32,13 @@ export default function UserAvatar({ avatar_url, name }: UserAvatarProps) {
                     <DropdownMenuLabel>User Options</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                        <Button
-                            variant={"ghost"}
-                            className="w-full justify-start text-base font-normal"
+                        <a
+                            className="flex cursor-pointer items-center gap-2"
+                            href="/api/v1/login/logout"
                         >
+                            <LogOut />
                             Log Out
-                        </Button>
+                        </a>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
