@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 export interface TodoItemType {
     id: string;
     text: string;
@@ -11,8 +11,9 @@ type TodoProviderProps = { children: React.ReactNode };
 type TodoContextType = {
     todos: TodoItemType[];
     createTodo: () => void;
-    deleteTodo: (createdAt: string) => void;
-    updateTodo: (id: string, text?: string, done?: boolean) => void;
+    deleteTodo: (id: string) => void;
+    updateTodo: (params: { id: string; text?: string; done?: boolean }) => void;
+    scheduleTextUpdate: (text: string, id: string) => void;
 };
 
 const TodoContext = createContext<TodoContextType | null>(null);
@@ -22,10 +23,11 @@ function setStorage(todos: TodoItemType[]) {
 }
 
 export default function TodoProvider({ children }: TodoProviderProps) {
+    const lastScheduleCall = useRef(Date.now());
+
     const [todos, setTodo] = useState<TodoItemType[]>(() => {
         const localTodo = window.localStorage.getItem("todos") as null | string;
         if (localTodo) {
-            console.log(JSON.parse(localTodo));
             return JSON.parse(localTodo);
         }
         return [];
@@ -52,10 +54,20 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         });
     };
 
-    const updateTodo = (id: string, text?: string, done?: boolean) => {
+    const updateTodo = ({
+        id,
+        done,
+        text,
+    }: {
+        id: string;
+        text?: string;
+        done?: boolean;
+    }) => {
         if (text === undefined && done === undefined) {
             return;
         }
+        // this line below prevents that a scheduled update will happens before 3s
+        lastScheduleCall.current = Date.now();
         setTodo((prev) => {
             const idx = prev.findIndex((todo) => todo.id === id);
             if (text !== undefined) {
@@ -69,6 +81,15 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         });
     };
 
+    const scheduleTextUpdate = (text: string, id: string) => {
+        lastScheduleCall.current = Date.now();
+        setTimeout(() => {
+            if (lastScheduleCall.current + 3000 <= Date.now()) {
+                updateTodo({ id, text });
+            }
+        }, 3000);
+    };
+
     return (
         <TodoContext.Provider
             value={{
@@ -76,6 +97,7 @@ export default function TodoProvider({ children }: TodoProviderProps) {
                 createTodo,
                 deleteTodo,
                 updateTodo,
+                scheduleTextUpdate,
             }}
         >
             {children}
