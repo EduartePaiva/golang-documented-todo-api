@@ -15,4 +15,5 @@ func LoginRouter(api fiber.Router, service db.Database) {
 	loginG.Get("/google", handlers.GetGoogleRoute())
 	loginG.Get("/google/callback", handlers.GetGoogleCallbackRoute(service))
 	loginG.Get("/getuser", middleware.AuthMiddleware(service), handlers.GetUser())
+	loginG.Get("logout", handlers.Logout(service))
 }

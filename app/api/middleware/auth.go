@@ -8,8 +8,8 @@ import (
 	"github.com/golang-documented-todo-api/app/pkg/session"
 )
 
-// Authenticate the user and store the session for the next users
-func AuthMiddleware(service db.SessionService) func(c *fiber.Ctx) error {
+// Authenticate the user and store the session for the next handler
+func AuthMiddleware(service db.SessionService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sessionCookie := c.Cookies("session")
 		if sessionCookie == "" {

@@ -55,6 +55,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteSessionByID = `-- name: DeleteSessionByID :exec
+    delete from "session" where "session"."id" = $1
+`
+
+func (q *Queries) DeleteSessionByID(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, deleteSessionByID, id)
+	return err
+}
+
 const getTodoByID = `-- name: GetTodoByID :many
     select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."id" = $1
 `

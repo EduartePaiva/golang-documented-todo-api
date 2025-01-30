@@ -190,6 +190,7 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 			ProviderName:   repository.ProviderNameGoogle,
 		})
 		if err != nil {
+			fmt.Println("error 2")
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
@@ -202,6 +203,7 @@ func GetGoogleCallbackRoute(service db.Database) fiber.Handler {
 		newSession, err := session.CreateSession(c.Context(), service, sessionToken, newUser.ID)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Println("error 3")
 			return c.SendStatus(http.StatusBadRequest)
 		}
 		session.SetSessionTokenCookie(sessionToken, newSession.ExpiresAt.Time, c.Cookie)
@@ -226,5 +228,21 @@ func GetUser() fiber.Handler {
 			AvatarURL: session.AvatarUrl.String,
 		}
 		return c.JSON(response)
+	}
+}
+
+func Logout(service db.SessionService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		sessionCookie := c.Cookies("session")
+		if sessionCookie == "" {
+			return c.SendStatus(http.StatusUnauthorized)
+		}
+
+		if err := session.InvalidateSession(c.Context(), service, sessionCookie); err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		session.DeleteSessionTokenCookie(c.Cookie)
+		return c.Redirect(env.Get().FrontendURL + "/")
 	}
 }

@@ -86,3 +86,19 @@ func SetSessionTokenCookie(
 		Path:     "/",
 	})
 }
+
+func DeleteSessionTokenCookie(cookie func(cookie *fiber.Cookie)) {
+	cookie(&fiber.Cookie{
+		Name:     "session",
+		Value:    "",
+		HTTPOnly: true,
+		SameSite: "lax",
+		Secure:   env.Get().GoEnv == "production",
+		MaxAge:   0,
+		Path:     "/",
+	})
+}
+
+func InvalidateSession(ctx context.Context, service db.SessionService, sessionID string) error {
+	return service.DeleteSessionByID(ctx, sessionID)
+}

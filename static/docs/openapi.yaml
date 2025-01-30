@@ -348,6 +348,14 @@ paths:
     get:
       tags: [Auth]
       description: Logout the user from his current session
+      parameters:
+        - name: session
+          in: cookie
+          required: true
+          schema:
+            default: 465asdasdas454sometoken
+            type: string
+            description: The session token to logout
       responses:
         302:
           description: Redirects to the homepage after a successful logout
@@ -369,3 +377,8 @@ paths:
                 type: string
                 examples:
                   - internal server error
+        400:
+          description: "If this route is called without a valid token"
+          content:
+            text/plain:
+              example: Bad Request

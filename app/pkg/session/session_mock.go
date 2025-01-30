@@ -25,3 +25,7 @@ func (m *SessionServiceMock) UpdateSessionExpiresAt(
 	args := m.Called(ctx, arg)
 	return args.Error(0)
 }
+
+func (m *SessionServiceMock) DeleteSessionByID(ctx context.Context, id string) error {
+	return nil
+}

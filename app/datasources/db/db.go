@@ -20,6 +20,7 @@ type Database interface {
 	UpdateUserAvatarURL(ctx context.Context, arg repository.UpdateUserAvatarURLParams) error
 	CreateUser(ctx context.Context, arg repository.CreateUserParams) (repository.User, error)
 	WithTx(tx pgx.Tx) *repository.Queries
+	DeleteSessionByID(ctx context.Context, id string) error
 }
 
 func NewDatabase(conn *pgx.Conn) Database {

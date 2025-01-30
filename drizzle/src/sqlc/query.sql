@@ -12,3 +12,5 @@ select "id", "username", "avatar_url", "provider_user_id", "provider_name" from 
     update "session" set "expires_at" = $1 where "session"."id" = $2;
 -- name: UpdateUserAvatarURL :exec
     update "users" set "avatar_url" = $1 where "users"."id" = $2;
+-- name: DeleteSessionByID :exec
+    delete from "session" where "session"."id" = $1;
