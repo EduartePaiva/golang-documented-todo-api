@@ -1,33 +1,13 @@
 import { TodoItemType } from "@/types/todo-type";
-import React, { createContext, useContext, useRef, useState } from "react";
 
-
-type TodoProviderProps = { children: React.ReactNode };
-type TodoContextType = {
-    todos: TodoItemType[];
-    createTodo: () => void;
-    deleteTodo: (id: string) => void;
-    updateTodo: (params: { id: string; text?: string; done?: boolean }) => void;
-    scheduleTextUpdate: (text: string, id: string) => void;
-};
-
-const TodoContext = createContext<TodoContextType | null>(null);
+type setTodoType = React.Dispatch<React.SetStateAction<TodoItemType[]>>;
 
 function setStorage(todos: TodoItemType[]) {
     window.localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-export default function TodoProvider({ children }: TodoProviderProps) {
-    const lastTimeoutId = useRef(-1);
-
-    const [todos, setTodo] = useState<TodoItemType[]>(() => {
-        const localTodo = window.localStorage.getItem("todos") as null | string;
-        if (localTodo) {
-            return JSON.parse(localTodo);
-        }
-        return [];
-    });
-    const createTodo = () => {
+export function createTodo(setTodo: setTodoType) {
+    return () => {
         setTodo((prev) => {
             const current = [
                 ...prev,
@@ -44,15 +24,22 @@ export default function TodoProvider({ children }: TodoProviderProps) {
             return current;
         });
     };
-    const deleteTodo = (id: string) => {
+}
+export function deleteTodo(setTodo: setTodoType) {
+    return (id: string) => {
         setTodo((prev) => {
             const current = prev.filter((todo) => todo.id !== id);
             setStorage(current);
             return current;
         });
     };
+}
 
-    const updateTodo = ({
+export function updateTodo(
+    setTodo: setTodoType,
+    lastTimeoutId: React.MutableRefObject<number>
+) {
+    return ({
         id,
         done,
         text,
@@ -86,37 +73,28 @@ export default function TodoProvider({ children }: TodoProviderProps) {
             return current;
         });
     };
+}
 
-    const scheduleTextUpdate = (text: string, id: string) => {
+export function scheduleTextUpdate(
+    setTodo: setTodoType,
+    lastTimeoutId: React.MutableRefObject<number>
+) {
+    const update = updateTodo(setTodo, lastTimeoutId);
+    return (text: string, id: string) => {
         // clear the last timeout
         window.clearTimeout(lastTimeoutId.current);
         // save the current timeout id
         lastTimeoutId.current = window.setTimeout(
-            () => updateTodo({ id, text }),
+            () => update({ id, text }),
             3000
         );
     };
-
-    return (
-        <TodoContext.Provider
-            value={{
-                todos,
-                createTodo,
-                deleteTodo,
-                updateTodo,
-                scheduleTextUpdate,
-            }}
-        >
-            {children}
-        </TodoContext.Provider>
-    );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export function useTodoContext() {
-    const context = useContext(TodoContext);
-    if (context === null) {
-        throw new Error("useTodoContext must be used within a ThemeProvider");
+export function getTodosFromLocalStorage(): TodoItemType[] {
+    const localTodo = window.localStorage.getItem("todos") as null | string;
+    if (localTodo) {
+        return JSON.parse(localTodo);
     }
-    return context;
+    return [];
 }

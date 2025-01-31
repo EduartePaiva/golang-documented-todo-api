@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import Header from "./components/header";
 import TodoItem from "./components/todo-item";
 import { Button } from "./components/ui/button";
-import { useTodoContext } from "./context/todo-context";
+import { useTodoContext } from "./context/todo-context/todo-context";
 
 function App() {
     const { todos, createTodo } = useTodoContext();

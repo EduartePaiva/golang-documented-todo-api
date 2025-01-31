@@ -1,4 +1,7 @@
-import { TodoItemType, useTodoContext } from "@/context/todo-context";
+import {
+    TodoItemType,
+    useTodoContext,
+} from "@/context/todo-context/todo-context";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
