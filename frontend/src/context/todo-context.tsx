@@ -1,11 +1,6 @@
+import { TodoItemType } from "@/types/todo-type";
 import React, { createContext, useContext, useRef, useState } from "react";
-export interface TodoItemType {
-    id: string;
-    text: string;
-    done: boolean;
-    updatedAt: string;
-    createdAt: string;
-}
+
 
 type TodoProviderProps = { children: React.ReactNode };
 type TodoContextType = {
