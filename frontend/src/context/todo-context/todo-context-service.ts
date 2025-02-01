@@ -53,11 +53,13 @@ export function updateTodo(
         }
         // this line below clear last timeout if it wasn't cleaned already
         window.clearTimeout(lastTimeoutId.current);
-        console.log("saving todo at timeout: ", lastTimeoutId.current);
         setTodo((prev) => {
             const current = prev.map((todo) => {
                 if (todo.id === id) {
-                    const newTodo: TodoItemType = { ...todo };
+                    const newTodo: TodoItemType = {
+                        ...todo,
+                        updatedAt: new Date().toJSON(),
+                    };
                     if (text !== undefined) {
                         newTodo.text = text;
                     }

@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { defineConfig } from "vite";
@@ -13,5 +15,8 @@ export default defineConfig({
         proxy: {
             "/api": "http://localhost:3000",
         },
+    },
+    test: {
+        environment: "jsdom",
     },
 });
