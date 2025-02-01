@@ -32,8 +32,14 @@ const selectUserFromProviderNameAndId = generateSelectOneQuery(
         .toSQL()
 );
 
+const selectAllTasksFromUser = generateSelectQuery(
+    "SelectAllTasksFromUser",
+    db.select().from(todos).where(eq(todos.userId, "")).toSQL()
+);
+
 export default [
     selectTodoById,
     selectUserBySessionID,
     selectUserFromProviderNameAndId,
+    selectAllTasksFromUser,
 ];

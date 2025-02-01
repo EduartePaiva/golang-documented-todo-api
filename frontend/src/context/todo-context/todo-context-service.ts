@@ -2,7 +2,7 @@ import { TodoItemType } from "@/types/todo-type";
 
 type setTodoType = React.Dispatch<React.SetStateAction<TodoItemType[]>>;
 
-function setStorage(todos: TodoItemType[]) {
+export function setStorage(todos: TodoItemType[]) {
     window.localStorage.setItem("todos", JSON.stringify(todos));
 }
 

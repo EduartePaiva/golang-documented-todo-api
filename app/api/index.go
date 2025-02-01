@@ -22,5 +22,6 @@ func CreateApp(ctx context.Context, dataSource *datasources.DataSources) *fiber.
 	})
 	routes.DocsRouter(api)
 	routes.LoginRouter(api, dataSource.DB)
+	routes.TaskRouter(api, dataSource.DB)
 	return app
 }

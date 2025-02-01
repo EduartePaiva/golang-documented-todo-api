@@ -7,5 +7,5 @@
 [_] - update the readme
 [_] - deploy the app using github actions
 [_] - when a todo is done it should go to a done place
-[_] - whenever a update happens on the frontend it should update the updatedAt field.
+[x] - whenever a update happens on the frontend it should update the updatedAt field.
 [_] - it's expected deletes when not logged in to not affect the database when the user logs back.

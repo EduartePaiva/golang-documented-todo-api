@@ -95,6 +95,37 @@ func (q *Queries) GetTodoByID(ctx context.Context, id pgtype.UUID) ([]Todo, erro
 	return items, nil
 }
 
+const selectAllTasksFromUser = `-- name: SelectAllTasksFromUser :many
+    select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1
+`
+
+func (q *Queries) SelectAllTasksFromUser(ctx context.Context, userID pgtype.UUID) ([]Todo, error) {
+	rows, err := q.db.Query(ctx, selectAllTasksFromUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Todo
+	for rows.Next() {
+		var i Todo
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.TodoText,
+			&i.Done,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const selectUserBySessionID = `-- name: SelectUserBySessionID :one
 select "users"."id", "users"."username", "users"."avatar_url", "users"."provider_user_id", "users"."provider_name", "session"."id", "session"."user_id", "session"."expires_at" from "session" inner join "users" on "users"."id" = "session"."user_id" where "session"."id" = $1 limit 1
 `

@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "react-hot-toast";
 import App from "./App.tsx";
 import BackgroundLayout from "./components/background-layout.tsx";
 import TodoProvider from "./context/todo-context/todo-context.tsx";
@@ -14,6 +15,7 @@ createRoot(document.getElementById("root")!).render(
                     <App />
                 </BackgroundLayout>
             </TodoProvider>
+            <Toaster />
         </UserProvider>
     </StrictMode>
 );
