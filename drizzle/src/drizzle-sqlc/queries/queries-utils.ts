@@ -8,6 +8,14 @@ export function generateInsertOneQuery(name: string, query: Query): string {
     return `-- name: ${name} :one
     ${query.sql};\n`;
 }
+export function generateInsertCopyFromQuery(
+    name: string,
+    query: Query
+): string {
+    return `-- name: ${name} :copyfrom
+    ${query.sql};\n`;
+}
+
 export function generateExecQuery(name: string, query: Query): string {
     return `-- name: ${name} :exec
     ${query.sql};\n`;

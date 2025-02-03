@@ -11,4 +11,5 @@ func TaskRouter(api fiber.Router, service db.Database) {
 	taskG := api.Group("/tasks", middleware.AuthMiddleware(service))
 
 	taskG.Get("", handlers.GetTasks(service))
+	taskG.Post("", handlers.PostTasks())
 }

@@ -1,5 +1,5 @@
 import db from "@/db";
-import { sessionTable, users } from "@/db/schema";
+import { sessionTable, todos, users } from "@/db/schema";
 import { generateExecQuery, generateInsertOneQuery } from "./queries-utils";
 
 const createSession = generateExecQuery(
@@ -24,4 +24,18 @@ const createUser = generateInsertOneQuery(
         .toSQL()
 );
 
-export default [createSession, createUser];
+const postTasks = generateExecQuery(
+    "PostTask",
+    db
+        .insert(todos)
+        .values({
+            todoText: "",
+            userId: "",
+            done: false,
+            id: "",
+            updatedAt: new Date(),
+        })
+        .toSQL()
+);
+
+export default [createSession, createUser, postTasks];

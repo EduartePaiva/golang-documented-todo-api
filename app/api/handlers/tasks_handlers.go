@@ -26,3 +26,15 @@ func GetTasks(service db.TasksServices) fiber.Handler {
 		return c.JSON(tasks)
 	}
 }
+
+func PostTasks() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		ctype := string(c.Request().Header.ContentType())
+		if ctype != "application/json" {
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		tasks.ProcessAndValidateIncomingTasks(c.Body())
+
+		return c.SendStatus(http.StatusAccepted)
+	}
+}

@@ -95,6 +95,29 @@ func (q *Queries) GetTodoByID(ctx context.Context, id pgtype.UUID) ([]Todo, erro
 	return items, nil
 }
 
+const postTask = `-- name: PostTask :exec
+    insert into "todos" ("id", "user_id", "todo_text", "done", "created_at", "updated_at") values ($1, $2, $3, $4, default, $5)
+`
+
+type PostTaskParams struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	TodoText  string
+	Done      pgtype.Bool
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) PostTask(ctx context.Context, arg PostTaskParams) error {
+	_, err := q.db.Exec(ctx, postTask,
+		arg.ID,
+		arg.UserID,
+		arg.TodoText,
+		arg.Done,
+		arg.UpdatedAt,
+	)
+	return err
+}
+
 const selectAllTasksFromUser = `-- name: SelectAllTasksFromUser :many
     select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1
 `
