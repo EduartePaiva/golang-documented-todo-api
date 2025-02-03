@@ -11,7 +11,7 @@ select "id", "username", "avatar_url", "provider_user_id", "provider_name" from 
 -- name: CreateUser :one
     insert into "users" ("id", "username", "avatar_url", "provider_user_id", "provider_name") values (default, $1, $2, $3, $4) returning "id", "username", "avatar_url", "provider_user_id", "provider_name";
 -- name: PostTask :exec
-    insert into "todos" ("id", "user_id", "todo_text", "done", "created_at", "updated_at") values ($1, $2, $3, $4, default, $5);
+    insert into "todos" ("id", "user_id", "todo_text", "done", "created_at", "updated_at") values ($1, $2, $3, $4, default, $5) on conflict ("id","user_id") do update set "todo_text" = $6, "done" = $7, "updated_at" = $8;
 -- name: UpdateSessionExpiresAt :exec
     update "session" set "expires_at" = $1 where "session"."id" = $2;
 -- name: UpdateUserAvatarURL :exec

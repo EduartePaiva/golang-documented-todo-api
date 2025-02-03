@@ -96,15 +96,18 @@ func (q *Queries) GetTodoByID(ctx context.Context, id pgtype.UUID) ([]Todo, erro
 }
 
 const postTask = `-- name: PostTask :exec
-    insert into "todos" ("id", "user_id", "todo_text", "done", "created_at", "updated_at") values ($1, $2, $3, $4, default, $5)
+    insert into "todos" ("id", "user_id", "todo_text", "done", "created_at", "updated_at") values ($1, $2, $3, $4, default, $5) on conflict ("id","user_id") do update set "todo_text" = $6, "done" = $7, "updated_at" = $8
 `
 
 type PostTaskParams struct {
-	ID        pgtype.UUID
-	UserID    pgtype.UUID
-	TodoText  string
-	Done      pgtype.Bool
-	UpdatedAt pgtype.Timestamp
+	ID          pgtype.UUID
+	UserID      pgtype.UUID
+	TodoText    string
+	Done        pgtype.Bool
+	UpdatedAt   pgtype.Timestamp
+	TodoText_2  string
+	Done_2      pgtype.Bool
+	UpdatedAt_2 pgtype.Timestamp
 }
 
 func (q *Queries) PostTask(ctx context.Context, arg PostTaskParams) error {
@@ -114,6 +117,9 @@ func (q *Queries) PostTask(ctx context.Context, arg PostTaskParams) error {
 		arg.TodoText,
 		arg.Done,
 		arg.UpdatedAt,
+		arg.TodoText_2,
+		arg.Done_2,
+		arg.UpdatedAt_2,
 	)
 	return err
 }

@@ -33,4 +33,5 @@ type UserServices interface {
 // Services interface that deals with the todos table
 type TasksServices interface {
 	SelectAllTasksFromUser(ctx context.Context, userID pgtype.UUID) ([]repository.Todo, error)
+	PostTask(ctx context.Context, arg repository.PostTaskParams) error
 }

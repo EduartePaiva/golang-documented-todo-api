@@ -3,6 +3,7 @@ package tasks
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -10,8 +11,8 @@ import (
 type incomingPostData struct {
 	ID        pgtype.UUID `json:"id"`
 	Text      string      `json:"text"`
-	Done      bool        `json:"done"`
-	UpdatedAt pgtype.Date `json:"updatedAt"`
+	Done      pgtype.Bool `json:"done"`
+	UpdatedAt time.Time   `json:"updatedAt"`
 }
 
 // This function process and validate the incoming request from the user
@@ -26,5 +27,6 @@ func ProcessAndValidateIncomingTasks(data []byte) ([]incomingPostData, error) {
 			return nil, fmt.Errorf("invalid UUID at index %d", i)
 		}
 	}
+
 	return parsedDate, nil
 }

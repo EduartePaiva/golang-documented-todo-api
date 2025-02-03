@@ -35,6 +35,14 @@ const postTasks = generateExecQuery(
             id: "",
             updatedAt: new Date(),
         })
+        .onConflictDoUpdate({
+            target: [todos.id, todos.userId],
+            set: {
+                todoText: "",
+                done: false,
+                updatedAt: new Date(),
+            },
+        })
         .toSQL()
 );
 

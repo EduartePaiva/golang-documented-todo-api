@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/golang-documented-todo-api/app/datasources/db"
+	"github.com/golang-documented-todo-api/app/repository"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -32,4 +33,22 @@ func GetTasksForUser(service db.TasksServices, userID pgtype.UUID, ctx context.C
 		})
 	}
 	return sanitizedTodos, nil
+}
+
+func PostTask(
+	service db.TasksServices,
+	data incomingPostData,
+	userID pgtype.UUID,
+	ctx context.Context,
+) error {
+	return service.PostTask(ctx, repository.PostTaskParams{
+		ID:          data.ID,
+		UserID:      userID,
+		TodoText:    data.Text,
+		Done:        data.Done,
+		UpdatedAt:   pgtype.Timestamp{Time: data.UpdatedAt, Valid: true},
+		TodoText_2:  data.Text,
+		Done_2:      data.Done,
+		UpdatedAt_2: pgtype.Timestamp{Time: data.UpdatedAt, Valid: true},
+	})
 }

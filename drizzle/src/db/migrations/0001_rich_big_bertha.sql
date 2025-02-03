@@ -1,0 +1,1 @@
+ALTER TABLE "todos" ADD CONSTRAINT "unique_userid_with_todoid" UNIQUE("id","user_id");

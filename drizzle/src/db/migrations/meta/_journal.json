@@ -8,6 +8,13 @@
       "when": 1736618564987,
       "tag": "0000_gifted_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1738609834766,
+      "tag": "0001_rich_big_bertha",
+      "breakpoints": true
     }
   ]
 }
