@@ -75,71 +75,66 @@ paths:
                   type: object
                   properties:
                     id:
-                      type: integer
-                      minimum: -9007199254740991
-                      maximum: 9007199254740991
+                      type: string
+                      examples: [8631fdef-236f-46da-8600-25b60f92c091]
                     text:
                       type: string
+                      examples: [I have to do the dishes]
                     done:
                       type: boolean
+                      examples: [false]
                     updatedAt:
                       type: string
                     createdAt:
                       type: string
-                  required: [id, name, done, updatedAt, createdAt]
+                  required: [id, text, done, updatedAt, createdAt]
     post:
       tags:
         - Todo
       requestBody:
-        description: The task to insert
+        description: |
+          Accept an array of tasks to update or create.   
+          If the task id already exists in the database,  
+          instead of creating a new one it'll update the existing one.
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 2
-                  maxLength: 500
-                done:
-                  type: boolean
-              required: [name]
-      responses:
-        "200":
-          description: The created task
-          content:
-            application/json:
-              schema:
+              type: array
+              items:
                 type: object
                 properties:
                   id:
-                    type: integer
-                  name:
                     type: string
+                    examples: [8631fdef-236f-46da-8600-25b60f92c091]
+                  text:
+                    type: string
+                    minLength: 2
+                    maxLength: 500
                   done:
                     type: boolean
                   updatedAt:
                     type: string
-                  createdAt:
-                    type: string
-                required: [id, name, done, updatedAt, createdAt]
-        "404":
-          description: Tasks not found
+                required: [text, id, done, updatedAt]
+      responses:
+        "200":
+          description: The created task
+          content:
+            text/plain:
+              example: tasks created
+        "401":
+          description: Unauthorized
           content:
             text/plain:
               schema:
                 type: string
-              example: Not Found
-        "422":
-          description: The validation erro(s)
+              example: Unauthorized
+        "400":
+          description: Bad request, happens if the data that the user sent is invalid.
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                required: [error]
+                type: string
+              example: bad request
   /tasks/{id}:
     get:
       tags:
