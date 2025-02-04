@@ -2,6 +2,8 @@ package tasks
 
 import (
 	"context"
+	"fmt"
+	"sync"
 
 	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/repository"
@@ -35,20 +37,39 @@ func GetTasksForUser(service db.TasksServices, userID pgtype.UUID, ctx context.C
 	return sanitizedTodos, nil
 }
 
-func PostTask(
+func postTask(
 	service db.TasksServices,
-	data incomingPostData,
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	task repository.PostTaskParams,
+) {
+	defer wg.Done()
+	err := service.PostTask(ctx, task)
+	if err != nil {
+		fmt.Printf("error while inserting value: %+v\n", task)
+		fmt.Printf("error message: %v\n", err)
+	}
+}
+
+func PostTasks(
+	service db.TasksServices,
+	tasks []incomingPostData,
 	userID pgtype.UUID,
 	ctx context.Context,
-) error {
-	return service.PostTask(ctx, repository.PostTaskParams{
-		ID:          data.ID,
-		UserID:      userID,
-		TodoText:    data.Text,
-		Done:        data.Done,
-		UpdatedAt:   pgtype.Timestamp{Time: data.UpdatedAt, Valid: true},
-		TodoText_2:  data.Text,
-		Done_2:      data.Done,
-		UpdatedAt_2: pgtype.Timestamp{Time: data.UpdatedAt, Valid: true},
-	})
+) {
+	var wg sync.WaitGroup
+	for _, task := range tasks {
+		wg.Add(1)
+		postTask(service, ctx, &wg, repository.PostTaskParams{
+			ID:          task.ID,
+			UserID:      userID,
+			TodoText:    task.Text,
+			Done:        task.Done,
+			UpdatedAt:   pgtype.Timestamp{Time: task.UpdatedAt, Valid: true},
+			TodoText_2:  task.Text,
+			Done_2:      task.Done,
+			UpdatedAt_2: pgtype.Timestamp{Time: task.UpdatedAt, Valid: true},
+		})
+	}
+	wg.Wait()
 }
