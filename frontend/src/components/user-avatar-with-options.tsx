@@ -15,7 +15,6 @@ interface UserAvatarProps {
 }
 
 export default function UserAvatar({ avatar_url, name }: UserAvatarProps) {
-    console.log(avatar_url);
     return (
         <div>
             <DropdownMenu dir="ltr">

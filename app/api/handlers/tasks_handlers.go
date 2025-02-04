@@ -43,7 +43,7 @@ func PostTasks(service db.TasksServices) fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
-
+		// TODO: optimize this in the future using sync.WaitGroup.
 		for i := 0; i < len(data); i++ {
 			err = service.PostTask(c.Context(), repository.PostTaskParams{
 				ID:          data[i].ID,
@@ -61,6 +61,6 @@ func PostTasks(service db.TasksServices) fiber.Handler {
 
 		}
 
-		return c.SendStatus(http.StatusAccepted)
+		return c.SendString("tasks created")
 	}
 }

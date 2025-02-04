@@ -32,6 +32,27 @@ type TodoContextType = {
 
 const TodoContext = createContext<TodoContextType | null>(null);
 
+async function syncTodos(): Promise<TodoItemType[]> {
+    const result = await fetch("/api/v1/tasks");
+    if (!result.ok || result.status != 200) {
+        throw new Error("failed to fetch the tasks from database");
+    }
+    const remote = await result.json();
+    const local = getTodosFromLocalStorage();
+    const todosToUpdate = findWitchTodosToUpdateRemote(local, remote);
+    const updateRes = await fetch("/api/v1/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(todosToUpdate),
+    });
+    if (!updateRes.ok || updateRes.status != 200) {
+        throw new Error("failed to update the database");
+    }
+    const finalTodos = syncLocalWithRemoteData(local, remote);
+    setStorage(finalTodos);
+    return finalTodos;
+}
+
 export default function TodoProvider({ children }: TodoProviderProps) {
     const lastTimeoutId = useRef(-1);
     const [todos, setTodo] = useState<TodoItemType[]>(getTodosFromLocalStorage);
@@ -41,27 +62,11 @@ export default function TodoProvider({ children }: TodoProviderProps) {
         if (!user.loggedIn) {
             return;
         }
-        // get the todos from the database
         const toastId = toast.loading("Syncing with the database");
-        fetch("/api/v1/tasks")
+        syncTodos()
             .then((res) => {
-                if (res.ok && res.status == 200) {
-                    return res.json();
-                } else {
-                    throw new Error("failed to fetch database");
-                }
-            })
-            .then((remote) => {
-                const local = getTodosFromLocalStorage();
-                const todosToUpdate = findWitchTodosToUpdateRemote(
-                    local,
-                    remote
-                );
-                console.log(todosToUpdate);
-                const finalTodos = syncLocalWithRemoteData(local, remote);
-                setStorage(finalTodos);
-                setTodo(finalTodos);
-                toast.success("Your todos was synced successfully", {
+                setTodo(res);
+                toast.success("Successfully synced with the database", {
                     id: toastId,
                 });
             })
