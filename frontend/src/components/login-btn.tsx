@@ -25,7 +25,7 @@ export default function LoginBtn(props: LoginBtnProps) {
                 <DropdownMenuItem asChild>
                     <ProviderLoginBtn
                         LogoIcon={FaGoogle}
-                        name="Google"
+                        providerName="Google"
                         href={`/api/v1/login/google`}
                         className="cursor-pointer text-[#db4639] hover:text-[#db4639]/90"
                     />
@@ -34,7 +34,7 @@ export default function LoginBtn(props: LoginBtnProps) {
                     <ProviderLoginBtn
                         className="cursor-pointer"
                         LogoIcon={FaGithub}
-                        name="Github"
+                        providerName="Github"
                         href={`/api/v1/login/github`}
                     />
                 </DropdownMenuItem>

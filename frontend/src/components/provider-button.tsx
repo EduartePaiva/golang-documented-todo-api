@@ -2,20 +2,17 @@ import { IconType } from "react-icons/lib";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 type ProviderLoginBtnProps = {
     LogoIcon: IconType;
-    name: string;
-    href: string;
-    className?: string;
+    providerName: string;
 };
 
-export default function ProviderLoginBtn({
-    LogoIcon,
-    name,
-    href,
-    className,
-}: ProviderLoginBtnProps) {
+const ProviderLoginBtn = React.forwardRef<
+    HTMLAnchorElement,
+    React.ComponentProps<"a"> & ProviderLoginBtnProps
+>(({ className, href, LogoIcon, providerName, ...props }, ref) => {
     return (
         <a
             className={cn(
@@ -27,8 +24,10 @@ export default function ProviderLoginBtn({
             )}
             type="submit"
             href={href}
+            ref={ref}
+            {...props}
         >
-            <span className="flex items-center gap-2">{name}</span>
+            <span className="flex items-center gap-2">{providerName}</span>
             <LogoIcon
                 style={{
                     width: "1.5em",
@@ -37,4 +36,8 @@ export default function ProviderLoginBtn({
             />
         </a>
     );
-}
+});
+
+ProviderLoginBtn.displayName = "Anchor";
+
+export default ProviderLoginBtn;

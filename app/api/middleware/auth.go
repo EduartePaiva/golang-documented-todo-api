@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,6 +18,7 @@ func AuthMiddleware(service db.SessionService) fiber.Handler {
 		}
 		result, err := session.ValidateSessionToken(c.Context(), service, sessionCookie)
 		if err != nil {
+			fmt.Println(err)
 			return c.SendStatus(http.StatusUnauthorized)
 		}
 		session.StoreSession(c, result)

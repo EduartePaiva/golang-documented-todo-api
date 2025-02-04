@@ -18,8 +18,6 @@ func GetTasks(service db.TasksServices) fiber.Handler {
 		if !ok {
 			return c.SendStatus(http.StatusInternalServerError)
 		}
-		fmt.Println(userData)
-
 		tasks, err := tasks.GetTasksForUser(service, userData.ID, c.Context())
 		if err != nil {
 			fmt.Println(err)

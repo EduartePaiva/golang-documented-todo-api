@@ -6,6 +6,7 @@ import (
 	"github.com/golang-documented-todo-api/app/repository"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Database interface {
@@ -25,7 +26,7 @@ type Database interface {
 	PostTask(ctx context.Context, arg repository.PostTaskParams) error
 }
 
-func NewDatabase(conn *pgx.Conn) Database {
+func NewDatabase(conn *pgxpool.Pool) Database {
 	queries := repository.New(conn)
 	return queries
 }

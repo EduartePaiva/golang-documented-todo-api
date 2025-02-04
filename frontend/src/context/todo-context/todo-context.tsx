@@ -57,6 +57,7 @@ export default function TodoProvider({ children }: TodoProviderProps) {
                     local,
                     remote
                 );
+                console.log(todosToUpdate);
                 const finalTodos = syncLocalWithRemoteData(local, remote);
                 setStorage(finalTodos);
                 setTodo(finalTodos);
