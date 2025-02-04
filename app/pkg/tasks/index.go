@@ -60,7 +60,7 @@ func PostTasks(
 	var wg sync.WaitGroup
 	for _, task := range tasks {
 		wg.Add(1)
-		postTask(service, ctx, &wg, repository.PostTaskParams{
+		go postTask(service, ctx, &wg, repository.PostTaskParams{
 			ID:          task.ID,
 			UserID:      userID,
 			TodoText:    task.Text,
