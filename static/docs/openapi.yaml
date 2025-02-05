@@ -176,6 +176,48 @@ paths:
               schema:
                 type: string
               example: Not Found
+    delete:
+      tags:
+        - Todo
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: id
+          in: path
+          example: 8631fdef-236f-46da-8600-25b60f92c091
+      responses:
+        "204":
+          description: The selected task was deleted
+          content:
+            text/plain:
+              example: No Content
+        "400":
+          description: If a malformed data is found
+          content:
+            text/plain:
+              example: Bad Request
+        "401":
+          description: User not authenticated
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Unauthorized
+        "404":
+          description: Task not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Not Found
+        "500":
+          description: internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: internal server error
   /login/github:
     get:
       tags: [Auth]
