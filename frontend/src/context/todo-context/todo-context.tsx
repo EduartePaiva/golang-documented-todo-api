@@ -40,13 +40,15 @@ async function syncTodos(): Promise<TodoItemType[]> {
     const remote = await result.json();
     const local = getTodosFromLocalStorage();
     const todosToUpdate = findWitchTodosToUpdateRemote(local, remote);
-    const updateRes = await fetch("/api/v1/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(todosToUpdate),
-    });
-    if (!updateRes.ok || updateRes.status != 200) {
-        throw new Error("failed to update the database");
+    if (todosToUpdate.length > 0) {
+        const updateRes = await fetch("/api/v1/tasks", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(todosToUpdate),
+        });
+        if (!updateRes.ok || updateRes.status != 200) {
+            throw new Error("failed to update the database");
+        }
     }
     const finalTodos = syncLocalWithRemoteData(local, remote);
     setStorage(finalTodos);

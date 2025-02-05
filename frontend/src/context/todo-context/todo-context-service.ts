@@ -1,4 +1,4 @@
-import { TodoItemType } from "@/types/todo-type";
+import { TodoItemType } from "./../../types/todo-type";
 
 type setTodoType = React.Dispatch<React.SetStateAction<TodoItemType[]>>;
 
@@ -22,7 +22,11 @@ export function createTodo(setTodo: setTodoType) {
             return current;
         });
         try {
-            fetch("/api/v1/tasks", { method: "POST" });
+            fetch("/api/v1/tasks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify([newTodo]),
+            });
         } catch (err) {
             console.error(err);
         }
@@ -89,6 +93,21 @@ export function updateTodo(
             setStorage(current);
             return current;
         });
+
+        try {
+            fetch("/api/v1/tasks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify([
+                    {
+                        id,
+                        done: done,
+                    },
+                ]),
+            });
+        } catch (err) {
+            console.error(err);
+        }
     };
 }
 

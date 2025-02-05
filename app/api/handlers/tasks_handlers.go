@@ -38,7 +38,7 @@ func PostTasks(service db.TasksServices) fiber.Handler {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 		data, err := tasks.ProcessAndValidateIncomingTasks(c.Body())
-		if err != nil {
+		if err != nil || len(data) == 0 {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}

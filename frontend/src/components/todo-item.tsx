@@ -36,6 +36,7 @@ export default function TodoItem({ text, id, done }: TodoItemType) {
                     variant={"destructive"}
                     className="h-7 w-7"
                     onClick={() => {
+                        toast.dismiss();
                         const toastId = toast.loading("Deleting...");
                         deleteTodo(id, user.loggedIn)
                             .then((statusCode) => {
