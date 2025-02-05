@@ -16,11 +16,11 @@ select "id", "username", "avatar_url", "provider_user_id", "provider_name" from 
     update "session" set "expires_at" = $1 where "session"."id" = $2;
 -- name: UpdateUserAvatarURL :exec
     update "users" set "avatar_url" = $1 where "users"."id" = $2;
--- name: UpdateTextFromTodo :exec
+-- name: UpdateTextFromTask :exec
     update "todos" set "todo_text" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3);
--- name: UpdateDoneFromTodo :exec
+-- name: UpdateDoneFromTask :exec
     update "todos" set "done" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3);
--- name: UpdateDoneAndTextFromTodo :exec
+-- name: UpdateDoneAndTextFromTask :exec
     update "todos" set "todo_text" = $1, "done" = $2 where ("todos"."id" = $3 and "todos"."user_id" = $4);
 -- name: DeleteSessionByID :exec
     delete from "session" where "session"."id" = $1;

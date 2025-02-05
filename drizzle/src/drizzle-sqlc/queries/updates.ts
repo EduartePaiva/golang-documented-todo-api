@@ -21,24 +21,24 @@ const updateUserAvatarURL = generateExecQuery(
     db.update(users).set({ avatarUrl: "" }).where(eq(users.id, "")).toSQL()
 );
 
-const updateTextFromTodo = generateExecQuery(
-    "UpdateTextFromTodo",
+const updateTextFromTask = generateExecQuery(
+    "UpdateTextFromTask",
     db
         .update(todos)
         .set({ todoText: "" })
         .where(and(eq(todos.id, ""), eq(todos.userId, "")))
         .toSQL()
 );
-const updateDoneFromTodo = generateExecQuery(
-    "UpdateDoneFromTodo",
+const updateDoneFromTask = generateExecQuery(
+    "UpdateDoneFromTask",
     db
         .update(todos)
         .set({ done: false })
         .where(and(eq(todos.id, ""), eq(todos.userId, "")))
         .toSQL()
 );
-const updateDoneAndTextFromTodo = generateExecQuery(
-    "UpdateDoneAndTextFromTodo",
+const updateDoneAndTextFromTask = generateExecQuery(
+    "UpdateDoneAndTextFromTask",
     db
         .update(todos)
         .set({ done: false, todoText: "" })
@@ -49,7 +49,7 @@ const updateDoneAndTextFromTodo = generateExecQuery(
 export default [
     updateSessionExpiresAt,
     updateUserAvatarURL,
-    updateTextFromTodo,
-    updateDoneFromTodo,
-    updateDoneAndTextFromTodo,
+    updateTextFromTask,
+    updateDoneFromTask,
+    updateDoneAndTextFromTask,
 ];

@@ -222,6 +222,42 @@ func (q *Queries) SelectUserFromProviderNameAndId(ctx context.Context, arg Selec
 	return i, err
 }
 
+const updateDoneAndTextFromTask = `-- name: UpdateDoneAndTextFromTask :exec
+    update "todos" set "todo_text" = $1, "done" = $2 where ("todos"."id" = $3 and "todos"."user_id" = $4)
+`
+
+type UpdateDoneAndTextFromTaskParams struct {
+	TodoText string
+	Done     pgtype.Bool
+	ID       pgtype.UUID
+	UserID   pgtype.UUID
+}
+
+func (q *Queries) UpdateDoneAndTextFromTask(ctx context.Context, arg UpdateDoneAndTextFromTaskParams) error {
+	_, err := q.db.Exec(ctx, updateDoneAndTextFromTask,
+		arg.TodoText,
+		arg.Done,
+		arg.ID,
+		arg.UserID,
+	)
+	return err
+}
+
+const updateDoneFromTask = `-- name: UpdateDoneFromTask :exec
+    update "todos" set "done" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3)
+`
+
+type UpdateDoneFromTaskParams struct {
+	Done   pgtype.Bool
+	ID     pgtype.UUID
+	UserID pgtype.UUID
+}
+
+func (q *Queries) UpdateDoneFromTask(ctx context.Context, arg UpdateDoneFromTaskParams) error {
+	_, err := q.db.Exec(ctx, updateDoneFromTask, arg.Done, arg.ID, arg.UserID)
+	return err
+}
+
 const updateSessionExpiresAt = `-- name: UpdateSessionExpiresAt :exec
     update "session" set "expires_at" = $1 where "session"."id" = $2
 `
@@ -233,6 +269,21 @@ type UpdateSessionExpiresAtParams struct {
 
 func (q *Queries) UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionExpiresAtParams) error {
 	_, err := q.db.Exec(ctx, updateSessionExpiresAt, arg.ExpiresAt, arg.ID)
+	return err
+}
+
+const updateTextFromTask = `-- name: UpdateTextFromTask :exec
+    update "todos" set "todo_text" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3)
+`
+
+type UpdateTextFromTaskParams struct {
+	TodoText string
+	ID       pgtype.UUID
+	UserID   pgtype.UUID
+}
+
+func (q *Queries) UpdateTextFromTask(ctx context.Context, arg UpdateTextFromTaskParams) error {
+	_, err := q.db.Exec(ctx, updateTextFromTask, arg.TodoText, arg.ID, arg.UserID)
 	return err
 }
 
