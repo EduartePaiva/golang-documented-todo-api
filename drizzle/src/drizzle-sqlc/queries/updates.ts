@@ -1,6 +1,6 @@
 import db from "@/db";
-import { sessionTable, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { sessionTable, todos, users } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import { generateExecQuery } from "./queries-utils";
 
 const query = db
@@ -21,4 +21,35 @@ const updateUserAvatarURL = generateExecQuery(
     db.update(users).set({ avatarUrl: "" }).where(eq(users.id, "")).toSQL()
 );
 
-export default [updateSessionExpiresAt, updateUserAvatarURL];
+const updateTextFromTodo = generateExecQuery(
+    "UpdateTextFromTodo",
+    db
+        .update(todos)
+        .set({ todoText: "" })
+        .where(and(eq(todos.id, ""), eq(todos.userId, "")))
+        .toSQL()
+);
+const updateDoneFromTodo = generateExecQuery(
+    "UpdateDoneFromTodo",
+    db
+        .update(todos)
+        .set({ done: false })
+        .where(and(eq(todos.id, ""), eq(todos.userId, "")))
+        .toSQL()
+);
+const updateDoneAndTextFromTodo = generateExecQuery(
+    "UpdateDoneAndTextFromTodo",
+    db
+        .update(todos)
+        .set({ done: false, todoText: "" })
+        .where(and(eq(todos.id, ""), eq(todos.userId, "")))
+        .toSQL()
+);
+
+export default [
+    updateSessionExpiresAt,
+    updateUserAvatarURL,
+    updateTextFromTodo,
+    updateDoneFromTodo,
+    updateDoneAndTextFromTodo,
+];
