@@ -5,7 +5,7 @@ select "users"."id", "users"."username", "users"."avatar_url", "users"."provider
 -- name: SelectUserFromProviderNameAndId :one
 select "id", "username", "avatar_url", "provider_user_id", "provider_name" from "users" where ("users"."provider_user_id" = $1 and "users"."provider_name" = $2) limit 1;
 -- name: SelectAllTasksFromUser :many
-    select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1;
+    select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1 order by "todos"."created_at" desc;
 -- name: CreateSession :exec
     insert into "session" ("id", "user_id", "expires_at") values ($1, $2, $3);
 -- name: CreateUser :one
@@ -18,3 +18,5 @@ select "id", "username", "avatar_url", "provider_user_id", "provider_name" from 
     update "users" set "avatar_url" = $1 where "users"."id" = $2;
 -- name: DeleteSessionByID :exec
     delete from "session" where "session"."id" = $1;
+-- name: DeleteTaskByIDAndUserID :exec
+    delete from "todos" where ("todos"."id" = $1 and "todos"."user_id" = $2);

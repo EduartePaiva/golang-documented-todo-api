@@ -24,6 +24,7 @@ type Database interface {
 	DeleteSessionByID(ctx context.Context, id string) error
 	SelectAllTasksFromUser(ctx context.Context, userID pgtype.UUID) ([]repository.Todo, error)
 	PostTask(ctx context.Context, arg repository.PostTaskParams) error
+	DeleteTaskByIDAndUserID(ctx context.Context, arg repository.DeleteTaskByIDAndUserIDParams) error
 }
 
 func NewDatabase(conn *pgxpool.Pool) Database {

@@ -19,3 +19,6 @@ func (v *taskServiceMock) SelectAllTasksFromUser(ctx context.Context, userID pgt
 func (v *taskServiceMock) PostTask(ctx context.Context, arg repository.PostTaskParams) error {
 	return nil
 }
+func (v *taskServiceMock) DeleteTaskByIDAndUserID(ctx context.Context, arg repository.DeleteTaskByIDAndUserIDParams) error {
+	return nil
+}

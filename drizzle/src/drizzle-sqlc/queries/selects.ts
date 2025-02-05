@@ -1,7 +1,7 @@
 import db from "@/db";
 import { sessionTable, todos, users } from "@/db/schema";
 import usersTable from "@/db/schema/users";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { generateSelectOneQuery, generateSelectQuery } from "./queries-utils";
 
 const selectTodoById = generateSelectQuery(
@@ -34,7 +34,12 @@ const selectUserFromProviderNameAndId = generateSelectOneQuery(
 
 const selectAllTasksFromUser = generateSelectQuery(
     "SelectAllTasksFromUser",
-    db.select().from(todos).where(eq(todos.userId, "")).toSQL()
+    db
+        .select()
+        .from(todos)
+        .where(eq(todos.userId, ""))
+        .orderBy(desc(todos.createdAt))
+        .toSQL()
 );
 
 export default [

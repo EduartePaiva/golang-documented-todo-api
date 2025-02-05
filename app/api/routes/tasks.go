@@ -12,4 +12,5 @@ func TaskRouter(api fiber.Router, service db.Database) {
 
 	taskG.Get("", handlers.GetTasks(service))
 	taskG.Post("", handlers.PostTasks(service))
+	taskG.Delete("/:id", handlers.DeleteTask(service))
 }

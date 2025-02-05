@@ -8,6 +8,8 @@ import (
 	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/pkg/session"
 	"github.com/golang-documented-todo-api/app/pkg/tasks"
+	"github.com/golang-documented-todo-api/app/repository"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func GetTasks(service db.TasksServices) fiber.Handler {
@@ -42,5 +44,30 @@ func PostTasks(service db.TasksServices) fiber.Handler {
 		}
 		tasks.PostTasks(service, data, user.ID, c.Context())
 		return c.SendString("tasks created")
+	}
+}
+
+func DeleteTask(service db.TasksServices) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		user, ok := session.GetStoredSession(c)
+		if !ok {
+			return c.SendStatus(http.StatusUnauthorized)
+		}
+		taskID := pgtype.UUID{}
+		err := taskID.Scan(c.Params("id"))
+		if err != nil || !taskID.Valid {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusBadRequest)
+		}
+
+		err = service.DeleteTaskByIDAndUserID(c.Context(), repository.DeleteTaskByIDAndUserIDParams{
+			ID:     taskID,
+			UserID: user.ID,
+		})
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+		return c.SendStatus(http.StatusNoContent)
 	}
 }

@@ -25,7 +25,7 @@ type TodoProviderProps = { children: React.ReactNode };
 type TodoContextType = {
     todos: TodoItemType[];
     createTodo: () => void;
-    deleteTodo: (id: string) => void;
+    deleteTodo: (id: string, isLoggedIn: boolean) => Promise<number>;
     updateTodo: (params: { id: string; text?: string; done?: boolean }) => void;
     scheduleTextUpdate: (text: string, id: string) => void;
 };

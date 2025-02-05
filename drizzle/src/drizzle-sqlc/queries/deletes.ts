@@ -1,6 +1,6 @@
 import db from "@/db";
-import { sessionTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { sessionTable, todos } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import { generateExecQuery } from "./queries-utils";
 
 const deleteSessionById = generateExecQuery(
@@ -8,4 +8,12 @@ const deleteSessionById = generateExecQuery(
     db.delete(sessionTable).where(eq(sessionTable.id, "")).toSQL()
 );
 
-export default [deleteSessionById];
+const deleteTaskByIDAndUserID = generateExecQuery(
+    "DeleteTaskByIDAndUserID",
+    db
+        .delete(todos)
+        .where(and(eq(todos.id, ""), eq(todos.userId, "")))
+        .toSQL()
+);
+
+export default [deleteSessionById, deleteTaskByIDAndUserID];

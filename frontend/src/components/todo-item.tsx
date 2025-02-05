@@ -1,14 +1,15 @@
-import {
-    TodoItemType,
-    useTodoContext,
-} from "@/context/todo-context/todo-context";
+import { useTodoContext } from "@/context/todo-context/todo-context";
+import { useUserContext } from "@/context/user-context";
+import { TodoItemType } from "@/types/todo-type";
 import { X } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Textarea } from "./ui/textarea";
 
 export default function TodoItem({ text, id, done }: TodoItemType) {
     const { deleteTodo, updateTodo, scheduleTextUpdate } = useTodoContext();
+    const { user } = useUserContext();
     return (
         <div className="flex w-min flex-col justify-center gap-1 rounded-sm bg-slate-50/50 p-2">
             <div className="flex items-center justify-between">
@@ -34,7 +35,34 @@ export default function TodoItem({ text, id, done }: TodoItemType) {
                     size={"icon"}
                     variant={"destructive"}
                     className="h-7 w-7"
-                    onClick={() => deleteTodo(id)}
+                    onClick={() => {
+                        const toastId = toast.loading("Deleting...");
+                        deleteTodo(id, user.loggedIn)
+                            .then((statusCode) => {
+                                switch (statusCode) {
+                                    case -1:
+                                        toast.success("Todo deleted locally", {
+                                            id: toastId,
+                                            icon: "⚠",
+                                        });
+                                        break;
+                                    case 204:
+                                        toast.success(
+                                            "Todo deleted locally and in the database",
+                                            { id: toastId }
+                                        );
+                                        break;
+                                    default:
+                                        toast.error(
+                                            `Some unexpected error happened, status code: ${statusCode}`,
+                                            { id: toastId }
+                                        );
+                                }
+                            })
+                            .catch(() =>
+                                toast.error("Network error", { id: toastId })
+                            );
+                    }}
                 >
                     <X />
                 </Button>

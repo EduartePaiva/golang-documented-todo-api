@@ -8,30 +8,45 @@ export function setStorage(todos: TodoItemType[]) {
 
 export function createTodo(setTodo: setTodoType) {
     return () => {
-        setTodo((prev) => {
-            const current = [
-                ...prev,
-                {
-                    id: crypto.randomUUID(),
-                    text: "type something...",
-                    done: false,
-                    createdAt: new Date().toJSON(),
-                    updatedAt: new Date().toJSON(),
-                },
-            ];
+        const newTodo: TodoItemType = {
+            id: crypto.randomUUID(),
+            text: "type something...",
+            done: false,
+            createdAt: new Date().toJSON(),
+            updatedAt: new Date().toJSON(),
+        };
 
+        setTodo((prev) => {
+            const current = [newTodo, ...prev];
             setStorage(current);
             return current;
         });
+        try {
+            fetch("/api/v1/tasks", { method: "POST" });
+        } catch (err) {
+            console.error(err);
+        }
     };
 }
+
 export function deleteTodo(setTodo: setTodoType) {
-    return (id: string) => {
+    /**
+     * returns -1 if the user is not logged in, meaning only the local storage was updated
+     */
+    return async (id: string, isLoggedIn: boolean): Promise<number> => {
+        let status = -1;
+        if (isLoggedIn) {
+            const res = await fetch(`/api/v1/tasks/${id}`, {
+                method: "DELETE",
+            });
+            status = res.status;
+        }
         setTodo((prev) => {
             const current = prev.filter((todo) => todo.id !== id);
             setStorage(current);
             return current;
         });
+        return status;
     };
 }
 

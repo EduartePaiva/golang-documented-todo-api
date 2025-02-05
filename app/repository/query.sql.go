@@ -64,6 +64,20 @@ func (q *Queries) DeleteSessionByID(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteTaskByIDAndUserID = `-- name: DeleteTaskByIDAndUserID :exec
+    delete from "todos" where ("todos"."id" = $1 and "todos"."user_id" = $2)
+`
+
+type DeleteTaskByIDAndUserIDParams struct {
+	ID     pgtype.UUID
+	UserID pgtype.UUID
+}
+
+func (q *Queries) DeleteTaskByIDAndUserID(ctx context.Context, arg DeleteTaskByIDAndUserIDParams) error {
+	_, err := q.db.Exec(ctx, deleteTaskByIDAndUserID, arg.ID, arg.UserID)
+	return err
+}
+
 const getTodoByID = `-- name: GetTodoByID :many
     select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."id" = $1
 `
@@ -125,7 +139,7 @@ func (q *Queries) PostTask(ctx context.Context, arg PostTaskParams) error {
 }
 
 const selectAllTasksFromUser = `-- name: SelectAllTasksFromUser :many
-    select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1
+    select "id", "user_id", "todo_text", "done", "created_at", "updated_at" from "todos" where "todos"."user_id" = $1 order by "todos"."created_at" desc
 `
 
 func (q *Queries) SelectAllTasksFromUser(ctx context.Context, userID pgtype.UUID) ([]Todo, error) {
