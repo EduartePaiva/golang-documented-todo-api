@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/golang-documented-todo-api/app/datasources/db"
 	"github.com/golang-documented-todo-api/app/repository"
@@ -11,11 +12,11 @@ import (
 )
 
 type todosWithoutUserID struct {
-	ID        pgtype.UUID      `json:"id"`
-	TodoText  string           `json:"text"`
-	Done      pgtype.Bool      `json:"done"`
-	CreatedAt pgtype.Timestamp `json:"updatedAt"`
-	UpdatedAt pgtype.Timestamp `json:"createdAt"`
+	ID        pgtype.UUID `json:"id"`
+	TodoText  string      `json:"text"`
+	Done      pgtype.Bool `json:"done"`
+	CreatedAt time.Time   `json:"createdAt"`
+	UpdatedAt time.Time   `json:"updatedAt"`
 }
 
 // this function will fetch the database and prepare the data to send to users
@@ -30,8 +31,8 @@ func GetTasksForUser(service db.TasksServices, userID pgtype.UUID, ctx context.C
 			ID:        todos[i].ID,
 			TodoText:  todos[i].TodoText,
 			Done:      todos[i].Done,
-			CreatedAt: todos[i].CreatedAt,
-			UpdatedAt: todos[i].UpdatedAt,
+			CreatedAt: todos[i].CreatedAt.Time,
+			UpdatedAt: todos[i].UpdatedAt.Time,
 		})
 	}
 	return sanitizedTodos, nil
