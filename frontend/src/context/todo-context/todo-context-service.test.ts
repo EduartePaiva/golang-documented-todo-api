@@ -25,9 +25,10 @@ describe("test update todo", () => {
             someState =
                 typeof action === "function" ? action(someState) : action;
         });
+        const putDatabase = async () => {};
 
         const lastTimeoutMock: React.MutableRefObject<number> = { current: -1 };
-        const update = updateTodo(setTodoMock, lastTimeoutMock);
+        const update = updateTodo(setTodoMock, putDatabase, lastTimeoutMock);
 
         const fakeDate = new Date();
         vi.setSystemTime(fakeDate);

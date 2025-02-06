@@ -16,6 +16,7 @@ import {
     createTodo,
     deleteTodo,
     getTodosFromLocalStorage,
+    putDatabase,
     scheduleTextUpdate,
     setStorage,
     updateTodo,
@@ -40,6 +41,12 @@ async function syncTodos(): Promise<TodoItemType[]> {
     const remote = await result.json();
     const local = getTodosFromLocalStorage();
     const todosToUpdate = findWitchTodosToUpdateRemote(local, remote);
+    console.log("to update");
+    console.log(todosToUpdate);
+    console.log("local");
+    console.log(local);
+    console.log("remote");
+    console.log(remote);
     if (todosToUpdate.length > 0) {
         const updateRes = await fetch("/api/v1/tasks", {
             method: "POST",
@@ -90,8 +97,12 @@ export default function TodoProvider({ children }: TodoProviderProps) {
                 todos,
                 createTodo: createTodo(setTodo),
                 deleteTodo: deleteTodo(setTodo),
-                updateTodo: updateTodo(setTodo, lastTimeoutId),
-                scheduleTextUpdate: scheduleTextUpdate(setTodo, lastTimeoutId),
+                updateTodo: updateTodo(setTodo, putDatabase, lastTimeoutId),
+                scheduleTextUpdate: scheduleTextUpdate(
+                    setTodo,
+                    lastTimeoutId,
+                    putDatabase
+                ),
             }}
         >
             {children}

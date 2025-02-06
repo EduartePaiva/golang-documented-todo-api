@@ -86,6 +86,10 @@ func PutTask(service db.TasksServices) fiber.Handler {
 		if !ok {
 			return c.SendStatus(http.StatusUnauthorized)
 		}
+		ctype := string(c.Request().Header.ContentType())
+		if ctype != "application/json" {
+			return c.SendStatus(http.StatusBadRequest)
+		}
 		taskID := pgtype.UUID{}
 		err := taskID.Scan(c.Params("id"))
 		if err != nil || !taskID.Valid {

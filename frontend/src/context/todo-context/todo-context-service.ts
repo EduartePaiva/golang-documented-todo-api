@@ -54,30 +54,47 @@ export function deleteTodo(setTodo: setTodoType) {
     };
 }
 
+interface updateTodoProps {
+    id: string;
+    text?: string;
+    done?: boolean;
+}
+interface putDatabaseProps extends updateTodoProps {
+    updatedAt: string;
+}
+
+export async function putDatabase({
+    id,
+    updatedAt,
+    done,
+    text,
+}: putDatabaseProps): Promise<Response> {
+    const result = await fetch(`/api/v1/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ done, text, updatedAt }),
+    });
+    return result;
+}
+
 export function updateTodo(
     setTodo: setTodoType,
+    putDatabase: (data: putDatabaseProps) => Promise<Response>,
     lastTimeoutId: React.MutableRefObject<number>
 ) {
-    return ({
-        id,
-        done,
-        text,
-    }: {
-        id: string;
-        text?: string;
-        done?: boolean;
-    }) => {
+    return ({ id, done, text }: updateTodoProps) => {
         if (text === undefined && done === undefined) {
             return;
         }
         // this line below clear last timeout if it wasn't cleaned already
         window.clearTimeout(lastTimeoutId.current);
+        const updatedAt = new Date().toJSON();
         setTodo((prev) => {
             const current = prev.map((todo) => {
                 if (todo.id === id) {
                     const newTodo: TodoItemType = {
                         ...todo,
-                        updatedAt: new Date().toJSON(),
+                        updatedAt,
                     };
                     if (text !== undefined) {
                         newTodo.text = text;
@@ -89,33 +106,21 @@ export function updateTodo(
                 }
                 return todo;
             });
-
             setStorage(current);
             return current;
         });
-
-        try {
-            fetch("/api/v1/tasks", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify([
-                    {
-                        id,
-                        done: done,
-                    },
-                ]),
-            });
-        } catch (err) {
-            console.error(err);
-        }
+        putDatabase({ id, updatedAt, done, text }).catch((err) =>
+            console.error(err)
+        );
     };
 }
 
 export function scheduleTextUpdate(
     setTodo: setTodoType,
-    lastTimeoutId: React.MutableRefObject<number>
+    lastTimeoutId: React.MutableRefObject<number>,
+    putDatabase: (data: putDatabaseProps) => Promise<Response>
 ) {
-    const update = updateTodo(setTodo, lastTimeoutId);
+    const update = updateTodo(setTodo, putDatabase, lastTimeoutId);
     return (text: string, id: string) => {
         // clear the last timeout
         window.clearTimeout(lastTimeoutId.current);
