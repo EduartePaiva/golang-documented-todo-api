@@ -120,9 +120,10 @@ func PutTask(service db.TasksServices) fiber.Handler {
 		}
 		if len(bodyTask.Text) > 0 {
 			err := service.UpdateTextFromTask(c.Context(), repository.UpdateTextFromTaskParams{
-				TodoText: bodyTask.Text,
-				ID:       taskID,
-				UserID:   user.ID,
+				TodoText:  bodyTask.Text,
+				ID:        taskID,
+				UserID:    user.ID,
+				UpdatedAt: pgtype.Timestamp{Time: *bodyTask.UpdatedAt, Valid: true},
 			})
 			if err != nil {
 				fmt.Println(err)
@@ -132,9 +133,10 @@ func PutTask(service db.TasksServices) fiber.Handler {
 		}
 		if bodyTask.Done.Valid {
 			err := service.UpdateDoneFromTask(c.Context(), repository.UpdateDoneFromTaskParams{
-				Done:   bodyTask.Done,
-				ID:     taskID,
-				UserID: user.ID,
+				Done:      bodyTask.Done,
+				ID:        taskID,
+				UserID:    user.ID,
+				UpdatedAt: pgtype.Timestamp{Time: *bodyTask.UpdatedAt, Valid: true},
 			})
 
 			if err != nil {
