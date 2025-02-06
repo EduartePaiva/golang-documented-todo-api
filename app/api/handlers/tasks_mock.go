@@ -22,3 +22,15 @@ func (v *taskServiceMock) PostTask(ctx context.Context, arg repository.PostTaskP
 func (v *taskServiceMock) DeleteTaskByIDAndUserID(ctx context.Context, arg repository.DeleteTaskByIDAndUserIDParams) error {
 	return nil
 }
+
+func (v *taskServiceMock) UpdateDoneAndTextFromTask(ctx context.Context, arg repository.UpdateDoneAndTextFromTaskParams) error {
+	return nil
+}
+
+func (v *taskServiceMock) UpdateDoneFromTask(ctx context.Context, arg repository.UpdateDoneFromTaskParams) error {
+	return nil
+}
+
+func (v *taskServiceMock) UpdateTextFromTask(ctx context.Context, arg repository.UpdateTextFromTaskParams) error {
+	return nil
+}

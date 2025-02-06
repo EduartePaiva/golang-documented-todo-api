@@ -35,4 +35,7 @@ type TasksServices interface {
 	SelectAllTasksFromUser(ctx context.Context, userID pgtype.UUID) ([]repository.Todo, error)
 	PostTask(ctx context.Context, arg repository.PostTaskParams) error
 	DeleteTaskByIDAndUserID(ctx context.Context, arg repository.DeleteTaskByIDAndUserIDParams) error
+	UpdateDoneAndTextFromTask(ctx context.Context, arg repository.UpdateDoneAndTextFromTaskParams) error
+	UpdateDoneFromTask(ctx context.Context, arg repository.UpdateDoneFromTaskParams) error
+	UpdateTextFromTask(ctx context.Context, arg repository.UpdateTextFromTaskParams) error
 }
