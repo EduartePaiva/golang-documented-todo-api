@@ -25,7 +25,7 @@ const updateTextFromTask = generateExecQuery(
     "UpdateTextFromTask",
     db
         .update(todos)
-        .set({ todoText: "" })
+        .set({ todoText: "", updatedAt: new Date() })
         .where(and(eq(todos.id, ""), eq(todos.userId, "")))
         .toSQL()
 );
@@ -33,7 +33,7 @@ const updateDoneFromTask = generateExecQuery(
     "UpdateDoneFromTask",
     db
         .update(todos)
-        .set({ done: false })
+        .set({ done: false, updatedAt: new Date() })
         .where(and(eq(todos.id, ""), eq(todos.userId, "")))
         .toSQL()
 );
@@ -41,7 +41,7 @@ const updateDoneAndTextFromTask = generateExecQuery(
     "UpdateDoneAndTextFromTask",
     db
         .update(todos)
-        .set({ done: false, todoText: "" })
+        .set({ done: false, todoText: "", updatedAt: new Date() })
         .where(and(eq(todos.id, ""), eq(todos.userId, "")))
         .toSQL()
 );

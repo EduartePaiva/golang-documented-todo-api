@@ -223,20 +223,22 @@ func (q *Queries) SelectUserFromProviderNameAndId(ctx context.Context, arg Selec
 }
 
 const updateDoneAndTextFromTask = `-- name: UpdateDoneAndTextFromTask :exec
-    update "todos" set "todo_text" = $1, "done" = $2 where ("todos"."id" = $3 and "todos"."user_id" = $4)
+    update "todos" set "todo_text" = $1, "done" = $2, "updated_at" = $3 where ("todos"."id" = $4 and "todos"."user_id" = $5)
 `
 
 type UpdateDoneAndTextFromTaskParams struct {
-	TodoText string
-	Done     pgtype.Bool
-	ID       pgtype.UUID
-	UserID   pgtype.UUID
+	TodoText  string
+	Done      pgtype.Bool
+	UpdatedAt pgtype.Timestamp
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
 }
 
 func (q *Queries) UpdateDoneAndTextFromTask(ctx context.Context, arg UpdateDoneAndTextFromTaskParams) error {
 	_, err := q.db.Exec(ctx, updateDoneAndTextFromTask,
 		arg.TodoText,
 		arg.Done,
+		arg.UpdatedAt,
 		arg.ID,
 		arg.UserID,
 	)
@@ -244,17 +246,23 @@ func (q *Queries) UpdateDoneAndTextFromTask(ctx context.Context, arg UpdateDoneA
 }
 
 const updateDoneFromTask = `-- name: UpdateDoneFromTask :exec
-    update "todos" set "done" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3)
+    update "todos" set "done" = $1, "updated_at" = $2 where ("todos"."id" = $3 and "todos"."user_id" = $4)
 `
 
 type UpdateDoneFromTaskParams struct {
-	Done   pgtype.Bool
-	ID     pgtype.UUID
-	UserID pgtype.UUID
+	Done      pgtype.Bool
+	UpdatedAt pgtype.Timestamp
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
 }
 
 func (q *Queries) UpdateDoneFromTask(ctx context.Context, arg UpdateDoneFromTaskParams) error {
-	_, err := q.db.Exec(ctx, updateDoneFromTask, arg.Done, arg.ID, arg.UserID)
+	_, err := q.db.Exec(ctx, updateDoneFromTask,
+		arg.Done,
+		arg.UpdatedAt,
+		arg.ID,
+		arg.UserID,
+	)
 	return err
 }
 
@@ -273,17 +281,23 @@ func (q *Queries) UpdateSessionExpiresAt(ctx context.Context, arg UpdateSessionE
 }
 
 const updateTextFromTask = `-- name: UpdateTextFromTask :exec
-    update "todos" set "todo_text" = $1 where ("todos"."id" = $2 and "todos"."user_id" = $3)
+    update "todos" set "todo_text" = $1, "updated_at" = $2 where ("todos"."id" = $3 and "todos"."user_id" = $4)
 `
 
 type UpdateTextFromTaskParams struct {
-	TodoText string
-	ID       pgtype.UUID
-	UserID   pgtype.UUID
+	TodoText  string
+	UpdatedAt pgtype.Timestamp
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
 }
 
 func (q *Queries) UpdateTextFromTask(ctx context.Context, arg UpdateTextFromTaskParams) error {
-	_, err := q.db.Exec(ctx, updateTextFromTask, arg.TodoText, arg.ID, arg.UserID)
+	_, err := q.db.Exec(ctx, updateTextFromTask,
+		arg.TodoText,
+		arg.UpdatedAt,
+		arg.ID,
+		arg.UserID,
+	)
 	return err
 }
 

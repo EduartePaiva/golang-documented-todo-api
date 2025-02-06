@@ -77,7 +77,7 @@ func DeleteTask(service db.TasksServices) fiber.Handler {
 type putTaskBody struct {
 	Text      string      `json:"text"`
 	Done      pgtype.Bool `json:"done"`
-	UpdatedAt time.Time   `json:"updatedAt"`
+	UpdatedAt *time.Time  `json:"updatedAt"`
 }
 
 func PutTask(service db.TasksServices) fiber.Handler {
@@ -94,17 +94,19 @@ func PutTask(service db.TasksServices) fiber.Handler {
 		}
 		bodyTask := putTaskBody{}
 		err = json.Unmarshal(c.Body(), &bodyTask)
-		if err != nil {
+		if err != nil || bodyTask.UpdatedAt == nil {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
 
 		if len(bodyTask.Text) > 0 && bodyTask.Done.Valid {
+			fmt.Println("here?")
 			err := service.UpdateDoneAndTextFromTask(c.Context(), repository.UpdateDoneAndTextFromTaskParams{
-				TodoText: bodyTask.Text,
-				Done:     bodyTask.Done,
-				ID:       taskID,
-				UserID:   user.ID,
+				TodoText:  bodyTask.Text,
+				Done:      bodyTask.Done,
+				ID:        taskID,
+				UserID:    user.ID,
+				UpdatedAt: pgtype.Timestamp{Time: *bodyTask.UpdatedAt, Valid: true},
 			})
 			if err != nil {
 				fmt.Println(err)
@@ -138,6 +140,6 @@ func PutTask(service db.TasksServices) fiber.Handler {
 			return c.SendStatus(http.StatusNoContent)
 		}
 
-		return c.SendStatus(http.StatusNoContent)
+		return c.SendStatus(http.StatusBadRequest)
 	}
 }
