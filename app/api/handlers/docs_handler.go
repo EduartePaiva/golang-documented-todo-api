@@ -10,12 +10,12 @@ import (
 func GetOpenApiSpec() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "text/plain")
-		return c.SendFile(path.Join(env.Get().BasePath, "/static/docs/openapi.yaml"), true)
+		return c.SendFile(path.Join(env.Get().BasePath, "/app/static/docs/openapi.yaml"), true)
 	}
 }
 
 func GetScalarHtml() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.SendFile(path.Join(env.Get().BasePath, "/static/docs/scalar.html"), true)
+		return c.SendFile(path.Join(env.Get().BasePath, "/app/static/docs/scalar.html"), true)
 	}
 }

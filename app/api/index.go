@@ -16,7 +16,6 @@ func CreateApp(ctx context.Context, dataSource *datasources.DataSources) *fiber.
 	if env.Get().GoEnv != "production" {
 		api.Use(logger.New())
 	}
-
 	api.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, world!")
 	})
