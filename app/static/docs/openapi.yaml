@@ -176,7 +176,7 @@ paths:
               schema:
                 type: string
               example: Not Found
-    put:
+    patch:
       tags:
         - Todo
       requestBody:

@@ -74,13 +74,13 @@ func DeleteTask(service db.TasksServices) fiber.Handler {
 	}
 }
 
-type putTaskBody struct {
+type patchTaskBody struct {
 	Text      string      `json:"text"`
 	Done      pgtype.Bool `json:"done"`
 	UpdatedAt *time.Time  `json:"updatedAt"`
 }
 
-func PutTask(service db.TasksServices) fiber.Handler {
+func PatchTask(service db.TasksServices) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		user, ok := session.GetStoredSession(c)
 		if !ok {
@@ -96,7 +96,7 @@ func PutTask(service db.TasksServices) fiber.Handler {
 			fmt.Println(err)
 			return c.SendStatus(http.StatusBadRequest)
 		}
-		bodyTask := putTaskBody{}
+		bodyTask := patchTaskBody{}
 		err = json.Unmarshal(c.Body(), &bodyTask)
 		if err != nil || bodyTask.UpdatedAt == nil {
 			fmt.Println(err)
