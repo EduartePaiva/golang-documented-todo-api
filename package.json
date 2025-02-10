@@ -1,15 +1,15 @@
 {
-    "name": "golang-documented-todo-api",
-    "version": "1.0.0",
-    "description": "",
-    "private": true,
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "pnpm run -r --parallel lint",
-        "dev": "pnpm run -r --parallel --aggregate-output dev",
-        "build": "pnpm run -r build"
-    },
-    "keywords": [],
-    "author": "Eduarte",
-    "license": "ISC"
+  "name": "golang-documented-todo-api",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "pnpm run -r ci-test",
+    "lint": "pnpm run -r --parallel lint",
+    "dev": "pnpm run -r --parallel --aggregate-output dev",
+    "build": "pnpm run -r build"
+  },
+  "keywords": [],
+  "author": "Eduarte",
+  "license": "ISC"
 }

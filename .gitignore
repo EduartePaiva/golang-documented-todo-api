@@ -4,3 +4,4 @@ docker-data
 *.gz
 temp-build
 tmp
+deploy

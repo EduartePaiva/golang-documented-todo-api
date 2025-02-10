@@ -10,3 +10,4 @@
 [x] - whenever a update happens on the frontend it should update the updatedAt field.
 [_] - it's expected deletes when not logged in to not affect the database when the user logs back.
 [_] - a put for updating todo text and another dor done
+[_] - limit the number of todos per user

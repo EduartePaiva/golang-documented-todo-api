@@ -8,6 +8,7 @@
         "start": "bun ./src/main.ts",
         "test": "vitest",
         "lint": "eslint",
+        "ci-test": "vitest --run",
         "db:migrate": "cross-env DB_MIGRATING=true drizzle-kit migrate",
         "db:generate": "drizzle-kit generate",
         "db:studio": "drizzle-kit studio",
