@@ -25,7 +25,9 @@ describe("test update todo", () => {
             someState =
                 typeof action === "function" ? action(someState) : action;
         });
-        const putDatabase = async () => {};
+        const putDatabase = async () => {
+            return new Response();
+        };
 
         const lastTimeoutMock: React.MutableRefObject<number> = { current: -1 };
         const update = updateTodo(setTodoMock, putDatabase, lastTimeoutMock);
