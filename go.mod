@@ -1,6 +1,6 @@
 module github.com/golang-documented-todo-api
 
-go 1.22.2
+go 1.25.1
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.6

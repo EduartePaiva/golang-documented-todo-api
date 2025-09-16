@@ -2,3 +2,6 @@ packages:
   - drizzle
   - frontend
   - js-packages/*
+onlyBuiltDependencies:
+  - '@swc/core'
+  - esbuild
